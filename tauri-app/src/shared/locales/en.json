@@ -600,6 +600,8 @@
     "startUsing": "Start Using"
   },
   "vbcableDetect": {
+    "manualSetupNotice": "Automatic driver installation is temporarily unavailable. Download VB-CABLE from the official website, install it yourself, then check again. Windows may require a restart.",
+    "checkAgain": "Check again",
     "title": "VB-Cable Driver Required",
     "message": "VB-Cable driver is required for MicYou to function as a virtual microphone on Windows. Would you like to install it automatically?",
     "autoInstall": "Install Automatically",

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Check, Copy, Download, Loader2 } from '@lucide/vue';
+import VBCableManualSetup from '@/features/onboarding/components/VBCableManualSetup.vue';
+import { Check, Copy, Download } from '@lucide/vue';
 import { isLinux, isMacOS } from '@/shared/lib/os';
 import { supportedDistros, useOutputDevices } from '../composables/useOutputDevices';
 
@@ -13,9 +14,7 @@ const {
   pipewireStatus,
   selectedDistro,
   currentPipewireInstallCommand,
-  vbcableInstalling,
-  vbcableInstallProgress,
-  installVBCable,
+  fetchDevices,
   openVBCableDownload,
   openBlackHoleDownload,
 } = useOutputDevices();
@@ -137,25 +136,7 @@ async function copyPipewireCommand() {
     </div>
     <p class="text-xs text-on-surface-variant">{{ $t('settings.vbcable.desc') }}</p>
     <div v-if="!hasVBCable" class="space-y-2">
-      <button
-        @click="installVBCable"
-        :disabled="vbcableInstalling"
-        class="w-full py-2 bg-primary disabled:opacity-50 rounded-xl text-sm font-bold text-on-primary flex items-center justify-center gap-2 transition-colors"
-      >
-        <Loader2 v-if="vbcableInstalling" class="w-4 h-4 animate-spin" />
-        <Download v-else class="w-4 h-4" />
-        {{
-          vbcableInstalling
-            ? vbcableInstallProgress || $t('vbcableInstall.installing')
-            : $t('vbcableDetect.autoInstall')
-        }}
-      </button>
-      <button
-        @click="openVBCableDownload"
-        class="w-full py-2 bg-surface-variant hover:bg-surface-variant/80 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors"
-      >
-        <Download class="w-4 h-4" /> {{ $t('settings.vbcable.download') }}
-      </button>
+      <VBCableManualSetup @download="openVBCableDownload" @recheck="fetchDevices" />
     </div>
   </div>
 </template>

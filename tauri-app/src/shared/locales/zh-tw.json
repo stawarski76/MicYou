@@ -598,6 +598,8 @@
     "startUsing": "開始使用"
   },
   "vbcableDetect": {
+    "manualSetupNotice": "Automatic driver installation is temporarily unavailable. Download VB-CABLE from the official website, install it yourself, then check again. Windows may require a restart.",
+    "checkAgain": "Check again",
     "title": "需要 VB-Cable 驅動程式",
     "message": "VB-Cable 驅動程式是 MicYou 在 Windows 上作為虛擬麥克風運作所必需的，您想要自動安裝嗎？",
     "autoInstall": "自動安裝",

@@ -598,6 +598,8 @@
     "startUsing": "開始使用"
   },
   "vbcableDetect": {
+    "manualSetupNotice": "Automatic driver installation is temporarily unavailable. Download VB-CABLE from the official website, install it yourself, then check again. Windows may require a restart.",
+    "checkAgain": "Check again",
     "title": "需要 VB-Cable 驅動",
     "message": "VB-Cable 驅動係 MicYou 喺 Windows 上面做虛擬咪高峰需要嘅，你想自動安裝嗎？",
     "autoInstall": "自動安裝",

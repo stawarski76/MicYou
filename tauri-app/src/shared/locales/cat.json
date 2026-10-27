@@ -598,6 +598,8 @@
     "startUsing": "开始使用喵~ (๑•̀ㅂ•́)و✧"
   },
   "vbcableDetect": {
+    "manualSetupNotice": "Automatic driver installation is temporarily unavailable. Download VB-CABLE from the official website, install it yourself, then check again. Windows may require a restart.",
+    "checkAgain": "Check again",
     "title": "笨蛋喵~ 喵喵酱忘记装 VB-Cable 啦! (・_・;)",
     "message": "在 Windows 上 MicYou 需要安装 VB-Cable 驱动作为虚拟麦克风才能正常工作喵~需要 MicYou 帮喵喵酱自动安装喵? (・_・)",
     "autoInstall": "好的喵~",
