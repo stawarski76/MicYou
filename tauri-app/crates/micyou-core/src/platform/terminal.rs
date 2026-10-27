@@ -145,6 +145,10 @@ mod tests {
 
         assert_eq!(find_exact_file(&dir, "micyou-cli.exe"), None);
 
+        // On case-insensitive filesystems, writing the lowercase path would
+        // overwrite the same entry while retaining its original casing.
+        fs::remove_file(dir.join("MicYou-CLI.exe"))
+            .expect("case-variant fixture should be removed before testing the exact name");
         let cli = dir.join("micyou-cli.exe");
         fs::write(&cli, b"cli").expect("CLI fixture should be written");
         assert_eq!(find_exact_file(&dir, "micyou-cli.exe"), Some(cli));
