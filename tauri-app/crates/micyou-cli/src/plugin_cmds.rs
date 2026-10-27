@@ -197,6 +197,7 @@ fn list_installed() -> Result<(), String> {
 }
 
 fn enable_plugin(id: &str) -> Result<(), String> {
+    micyou_core::plugins::require_external_plugins().map_err(|e| e.to_string())?;
     let plugins_dir = micyou_core::config::config_dir().join("plugins");
     let state_path = micyou_core::config::config_dir().join("plugin-state.json");
     let mut manager = micyou_plugin::PluginManager::new(plugins_dir, state_path);
@@ -928,6 +929,7 @@ fn write_file(dir: &Path, name: &str, content: &str) -> Result<(), String> {
 
 /// 安装插件目录到应用插件目录（~/.config/micyou/plugins/<id>/）
 fn install(dir: &str) -> Result<(), String> {
+    micyou_core::plugins::require_external_plugins().map_err(|e| e.to_string())?;
     let manifest_text = std::fs::read_to_string(Path::new(dir).join("plugin.json"))
         .map_err(|e| format!("read plugin.json: {e}"))?;
     let manifest = micyou_plugin::PluginManifest::from_json(&manifest_text)
@@ -972,6 +974,7 @@ fn install(dir: &str) -> Result<(), String> {
 
 /// 开发模式：轮询监听目录变更，自动重新安装
 fn dev(dir: &str, interval: f64) -> Result<(), String> {
+    micyou_core::plugins::require_external_plugins().map_err(|e| e.to_string())?;
     // 先校验 + 安装一次
     validate(dir)?;
     install(dir)?;
@@ -1030,4 +1033,20 @@ fn walk(dir: &str, ignore: &[&str]) -> Vec<std::path::PathBuf> {
         }
     }
     out
+}
+
+#[cfg(test)]
+mod quarantine_tests {
+    use super::{run, PluginAction};
+
+    #[test]
+    fn plugin_deployment_actions_fail_before_reading_paths_or_writing_state() {
+        for action in [
+            PluginAction::Install { dir: "nonexistent-plugin-directory".into() },
+            PluginAction::Dev { dir: "nonexistent-plugin-directory".into(), interval: 1.5 },
+            PluginAction::Enable { id: "dev.test.nonexistent".into() },
+        ] {
+            assert!(run(action).unwrap_err().contains("security quarantine"));
+        }
+    }
 }

@@ -617,6 +617,7 @@
     "retry": "重試"
   },
   "plugins": {
+    "securityDisabled": "Third-party plugins are temporarily unavailable while security fixes are being verified.",
     "title": "外掛程式",
     "desc": "使用原生或 WASM 外掛程式擴充 MicYou",
     "refresh": "重新整理",

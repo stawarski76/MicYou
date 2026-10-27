@@ -617,6 +617,7 @@
     "retry": "重试喵~"
   },
   "plugins": {
+    "securityDisabled": "Third-party plugins are temporarily unavailable while security fixes are being verified.",
     "title": "喵插件",
     "desc": "用原生或 WASM 喵插件扩展 MicYou 喵",
     "refresh": "刷新喵",

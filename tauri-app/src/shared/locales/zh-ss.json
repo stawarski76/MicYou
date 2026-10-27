@@ -618,6 +618,7 @@
     "retry": "重试"
   },
   "plugins": {
+    "securityDisabled": "Third-party plugins are temporarily unavailable while security fixes are being verified.",
     "title": "铁插件",
     "desc": "使用原生或 WASM 插件扩展硬核 MicYou",
     "refresh": "刷新",

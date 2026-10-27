@@ -20,12 +20,23 @@ pub fn allow_inbound() -> Result<(), String> {
     let exe_path = std::env::current_exe().map_err(|e| e.to_string())?;
     let exe = exe_path.to_string_lossy();
     let script = format!(
-        "netsh advfirewall firewall add rule name=\"MicYou App (TCP-In)\" dir=in action=allow program=\"{exe}\" protocol=TCP enable=yes; netsh advfirewall firewall add rule name=\"MicYou App (UDP-In)\" dir=in action=allow program=\"{exe}\" protocol=UDP enable=yes"
+        "{}\n$ErrorActionPreference = 'Stop'\nSet-MicYouFirewallRules -ProgramPath '{}'",
+        include_str!("firewall_rules.ps1"),
+        exe.replace('\'', "''"),
     );
-    let status = std::process::Command::new("powershell")
+    // Encode inside PowerShell from a single-quoted literal: neither the
+    // program path nor the nested script is ever evaluated by cmd.exe or
+    // interpolated as a second layer of PowerShell code.
+    let elevation = format!(
+        "$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes('{}')); $child = Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -ArgumentList @('-NoProfile','-NonInteractive','-EncodedCommand',$encoded) -Verb RunAs -WindowStyle Hidden -Wait -PassThru; exit $child.ExitCode",
+        script.replace('\'', "''"),
+    );
+    let powershell = std::path::PathBuf::from(
+        std::env::var_os("SystemRoot").unwrap_or_else(|| "C:\\Windows".into()),
+    ).join("System32\\WindowsPowerShell\\v1.0\\powershell.exe");
+    let status = std::process::Command::new(powershell)
         .args([
-            "-Command",
-            &format!("Start-Process cmd -ArgumentList '/c {script}' -Verb RunAs -WindowStyle Hidden"),
+            "-NoProfile", "-NonInteractive", "-Command", &elevation,
         ])
         .status()
         .map_err(|e| e.to_string())?;

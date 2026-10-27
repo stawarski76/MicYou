@@ -6,6 +6,8 @@
   "type": "module",
   "packageManager": "bun@1.4.2",
   "scripts": {
+    "test": "bun test --preload ./tests/helpers/vue-loader.ts tests/security",
+    "typecheck": "vue-tsc --noEmit",
     "licenses": "bun generate-licenses.js",
     "clean-bundles": "bun clean-bundles.js",
     "dev": "bun run licenses && vite",

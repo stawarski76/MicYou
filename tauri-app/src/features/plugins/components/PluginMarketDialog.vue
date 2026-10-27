@@ -309,7 +309,7 @@
                 {{ $t('plugins.retry') }}
               </button>
             </div>
-            <div v-else v-html="readmeContent"></div>
+            <PluginReadme v-else :content="readmeContent" />
           </div>
         </div>
       </div>
@@ -334,6 +334,7 @@
 </style>
 
 <script setup lang="ts">
+import PluginReadme from './PluginReadme.vue';
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ArrowLeft, BookOpen, Check, ExternalLink, GitPullRequest, Loader2, RefreshCw, Search, Store, TriangleAlert, X } from '@lucide/vue';
@@ -515,7 +516,7 @@ async function openReadme(plugin: MarketPlugin) {
   try {
     const res = await fetch(plugin.readmeUrl, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    readmeContent.value = parseMarkdown(await res.text());
+    readmeContent.value = await res.text();
   } catch (e) {
     readmeError.value = e instanceof Error ? e.message : String(e);
   } finally {
@@ -539,93 +540,6 @@ watch(
     if (!open) closeReadme();
   },
 );
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function sanitizeHtml(html: string): string {
-  let out = html.replace(
-    /<(script|style|iframe|object|embed|form|input|textarea|select|button|meta|link|base|svg|math)\b[^>]*>[\s\S]*?<\/\1\s*>/gi,
-    '',
-  );
-  out = out.replace(
-    /<\/?(script|style|iframe|object|embed|form|input|textarea|select|button|meta|link|base|svg|math)\b[^>]*>?/gi,
-    '',
-  );
-  out = out.replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)?/gi, '');
-  out = out.replace(/\s(srcdoc|formaction)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)?/gi, '');
-  out = out.replace(/(href|src)\s*=\s*(["']?)\s*(javascript|vbscript)\s*:[^"'>\s]*\2/gi, '$1="#"');
-  out = out.replace(/(href|src)\s*=\s*(["']?)\s*data\s*:\s*text\/html[^"'>\s]*\2/gi, '$1="#"');
-  return out;
-}
-
-function parseMarkdown(md: string): string {
-  const codeBlocks: string[] = [];
-  const inlineCodes: string[] = [];
-
-  let html = md.replace(/```[^\n]*\n?[\s\S]*?```/g, (block) => {
-    const code = block.replace(/```[^\n]*\n?/, '').replace(/\n?```\s*$/, '');
-    codeBlocks.push(escapeHtml(code));
-    return `\u0000CB${codeBlocks.length - 1}\u0000`;
-  });
-
-  html = html.replace(/`([^`\n]+)`/g, (_, code: string) => {
-    inlineCodes.push(escapeHtml(code));
-    return `\u0000IC${inlineCodes.length - 1}\u0000`;
-  });
-
-  html = sanitizeHtml(html);
-
-  html = html.replace(/^######\s+(.+)$/gm, '<h6 class="text-sm font-bold mt-6 mb-2 text-on-surface">$1</h6>');
-  html = html.replace(/^#####\s+(.+)$/gm, '<h5 class="text-base font-bold mt-6 mb-2 text-on-surface">$1</h5>');
-  html = html.replace(/^####\s+(.+)$/gm, '<h4 class="text-lg font-bold mt-6 mb-2 text-on-surface">$1</h4>');
-  html = html.replace(/^###\s+(.+)$/gm, '<h3 class="text-xl font-bold mt-6 mb-2 text-on-surface border-b border-surface-variant/30 pb-1">$1</h3>');
-  html = html.replace(/^##\s+(.+)$/gm, '<h2 class="text-2xl font-bold mt-6 mb-3 text-on-surface border-b border-surface-variant/30 pb-1">$1</h2>');
-  html = html.replace(/^#\s+(.+)$/gm, '<h1 class="text-3xl font-bold mt-6 mb-4 text-on-surface">$1</h1>');
-
-  html = html.replace(/\*\*\*([^*]+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-  html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong class="font-semibold text-on-surface">$1</strong>');
-  html = html.replace(/(^|[^*])\*([^*\n]+?)\*(?!\*)/g, '$1<em>$2</em>');
-
-  html = html.replace(/!\[([^\]]*)\]\(([^)\s]+)[^)]*\)/g, '<img src="$2" alt="$1" class="max-w-full rounded-lg my-3 border border-surface-variant/30" />');
-  html = html.replace(/\[([^\]]+)\]\(([^)\s]+)[^)]*\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary/80 break-all">$1</a>');
-
-  html = html.replace(/^>\s?(.+)$/gm, '<blockquote class="border-l-4 border-primary/60 pl-4 italic text-on-surface-variant my-3 bg-primary/5 py-2 pr-2 rounded-r">$1</blockquote>');
-
-  html = html.replace(/^\s*[-*]\s+(.+)$/gm, '<li class="ml-5 list-disc my-1 text-on-surface">$1</li>');
-  html = html.replace(/^\s*\d+\.\s+(.+)$/gm, '<li class="ml-5 list-decimal my-1 text-on-surface">$1</li>');
-  html = html.replace(/^(-{3,}|\*{3,}|_{3,})$/gm, '<hr class="my-6 border-surface-variant/30" />');
-
-  const blocks = html.split(/\n{2,}/);
-  html = blocks
-    .map((block) => {
-      block = block.trim();
-      if (!block) return '';
-      if (/^\u0000CB\d+\u0000$/.test(block)) return block;
-      if (/^<(h[1-6]|ul|ol|li|pre|blockquote|img|hr|div|table|p|details|figure|section)/i.test(block)) return block;
-      return `<p class="my-3 text-sm text-on-surface leading-relaxed">${block.replace(/\n/g, '<br>')}</p>`;
-    })
-    .join('\n');
-
-  html = html.replace(/(<li[\s\S]*?<\/li>\s*)+/g, (match) => `<ul class="my-3 space-y-1.5">${match}</ul>`);
-
-  html = html.replace(
-    /\u0000CB(\d+)\u0000/g,
-    (_, i: string) =>
-      `<pre class="bg-slate-800/60 p-4 rounded-lg my-4 overflow-x-auto text-xs text-gray-200 font-mono border border-white/10"><code>${codeBlocks[Number(i)]}</code></pre>`,
-  );
-  html = html.replace(
-    /\u0000IC(\d+)\u0000/g,
-    (_, i: string) =>
-      `<code class="bg-slate-800/60 px-1.5 py-0.5 rounded text-xs text-emerald-400 font-mono">${inlineCodes[Number(i)]}</code>`,
-  );
-  return html;
-}
 
 onMounted(async () => {
   void load();
