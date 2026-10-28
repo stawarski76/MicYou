@@ -212,6 +212,18 @@ async fn serve(
         None
     };
 
+    let _identity_lease = if mode == ConnectionMode::Wifi {
+        match crate::transport::secure::Identity::session_lease() {
+            Ok(lease) => Some(lease),
+            Err(error) => { let _ = ready.send(Err(error)); return Ok(()); }
+        }
+    } else { None };
+    let identity = if mode == ConnectionMode::Wifi {
+        match crate::transport::secure::Identity::load() {
+            Ok(identity) => Some(identity),
+            Err(error) => { let _ = ready.send(Err(error)); return Ok(()); }
+        }
+    } else { None };
     let _ = ready.send(Ok(()));
     log::info!("TCP Control Server listening on {}", bind_target);
 
@@ -249,6 +261,7 @@ async fn serve(
                     let active_audio_session = active_audio_session.clone();
                     let plugins = plugins.clone();
                     let client_cancel = cancel_token.clone();
+                    let identity = identity.clone();
                     clients.spawn(async move {
                         let _permit = permit;
                         if let Err(e) = handle_client(
@@ -263,6 +276,7 @@ async fn serve(
                             active_audio_session,
                             plugins,
                             client_cancel,
+                            identity,
                         )
                         .await
                         {
@@ -462,7 +476,47 @@ async fn clear_if_active(active: &SharedActiveConnection, connection_id: u64) ->
 
 #[allow(clippy::too_many_arguments)]
 async fn handle_client(
-    mut socket: TcpStream,
+    socket: TcpStream,
+    addr: SocketAddr,
+    events: SharedEvents,
+    audio_tx: tokio::sync::mpsc::Sender<AudioStreamEvent>,
+    stats: Arc<crate::stats::NetworkStats>,
+    mode: ConnectionMode,
+    active_connection: SharedActiveConnection,
+    takeover_lock: SharedTakeoverLock,
+    active_audio_session: SharedActiveAudioSession,
+    plugins: Arc<crate::plugins::PluginHost>,
+    cancel_token: CancellationToken,
+    identity: Option<Arc<crate::transport::secure::Identity>>,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    #[cfg(windows)]
+    let raw = std::os::windows::io::AsRawSocket::as_raw_socket(&socket);
+    #[cfg(unix)]
+    let raw = std::os::unix::io::AsRawFd::as_raw_fd(&socket);
+    if mode == ConnectionMode::Wifi {
+        let identity = identity.ok_or("Paired TLS identity is required for Wi-Fi")?;
+        static HANDSHAKES: tokio::sync::Semaphore = tokio::sync::Semaphore::const_new(16);
+        let permit = HANDSHAKES.try_acquire().map_err(|_| "Too many TLS handshakes")?;
+        let acceptor = tokio_rustls::TlsAcceptor::from(identity.tls.clone());
+        let mut secure = tokio::select! {
+            _ = cancel_token.cancelled() => return Ok(()),
+            result = timeout(HANDSHAKE_TIMEOUT, acceptor.accept(socket)) => result.map_err(|_| "TLS handshake timed out")??,
+        };
+        tokio::select! {
+            _ = cancel_token.cancelled() => return Ok(()),
+            result = timeout(HANDSHAKE_TIMEOUT, identity.authorize(&mut secure)) => result.map_err(|_| "Pairing authentication timed out")??,
+        }
+        drop(permit);
+        handle_stream(secure, raw, addr, events, audio_tx, stats, mode, active_connection, takeover_lock, active_audio_session, plugins, cancel_token).await
+    } else {
+        handle_stream(socket, raw, addr, events, audio_tx, stats, mode, active_connection, takeover_lock, active_audio_session, plugins, cancel_token).await
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn handle_stream<S: tokio::io::AsyncRead + tokio::io::AsyncWrite + Unpin + Send + 'static>(
+    mut socket: S,
+    raw: RawSocketHandle,
     addr: SocketAddr,
     events: SharedEvents,
     audio_tx: tokio::sync::mpsc::Sender<AudioStreamEvent>,
@@ -521,11 +575,6 @@ async fn handle_client(
         .map_or(ClientPlatform::Unknown, |connect| {
             ClientPlatform::from_wire(&connect.platform)
         });
-
-    #[cfg(windows)]
-    let raw: RawSocketHandle = std::os::windows::io::AsRawSocket::as_raw_socket(&socket);
-    #[cfg(unix)]
-    let raw: RawSocketHandle = std::os::unix::io::AsRawFd::as_raw_fd(&socket);
 
     let connection_id = NEXT_CONNECTION_ID.fetch_add(1, Ordering::Relaxed);
     let (tx, mut rx) = tokio::sync::mpsc::channel::<MessageWrapper>(100);
@@ -628,7 +677,7 @@ async fn handle_client(
     )
     .await;
 
-    let (mut read_half, mut write_half) = socket.into_split();
+    let (mut read_half, mut write_half) = tokio::io::split(socket);
     let writer_task = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             let payload = msg.encode_to_vec();
@@ -688,7 +737,6 @@ async fn handle_client(
     let tx_stats = tx.clone();
     let monitor_task = tokio::spawn(async move {
         let mut interval = tokio::time::interval(Duration::from_millis(1000));
-        let mut warning_fired = false;
         loop {
             interval.tick().await;
             let buffer_duration = if mode == ConnectionMode::Usb { 5 } else { 30 };
@@ -696,21 +744,7 @@ async fn handle_client(
             // Best effort: a full control queue only skips this second's report.
             let _ = tx_stats.try_send(stats_message(&metrics));
             events_emit.audio_metrics(metrics);
-            if cfg!(target_os = "windows")
-                && mode == ConnectionMode::Wifi
-                && !warning_fired
-                && !stats_emit.is_muted()
-            {
-                let tcp_time = stats_emit.get_tcp_connected_time();
-                let last_udp = stats_emit.get_last_udp_time();
-                // Any UDP packet this session proves the firewall lets the
-                // audio port through; only warn after 10 s of TCP without one.
-                let now = crate::stats::unix_millis();
-                if tcp_time > 0 && last_udp == 0 && now.saturating_sub(tcp_time) > 10_000 {
-                    events_emit.udp_audio_warning();
-                    warning_fired = true;
-                }
-            }
+
         }
     });
     let task_guard = TaskGuard::new(vec![writer_task, ping_task, monitor_task]);
@@ -1078,24 +1112,30 @@ pub(crate) mod admission_tests {
     type ClientTask = JoinHandle<Result<(), Box<dyn Error + Send + Sync>>>;
 
     async fn candidate(state: &ServerState, audio: tokio::sync::mpsc::Sender<AudioStreamEvent>, cancel: CancellationToken) -> (TcpStream, ClientTask) {
+        candidate_with_identity(state, audio, cancel, None).await
+    }
+
+    async fn candidate_with_identity(state: &ServerState, audio: tokio::sync::mpsc::Sender<AudioStreamEvent>, cancel: CancellationToken,
+        identity: Option<Arc<crate::transport::secure::Identity>>) -> (TcpStream, ClientTask) {
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
         let client = TcpStream::connect(listener.local_addr().unwrap()).await.unwrap();
         let (server, peer) = listener.accept().await.unwrap();
         let events = state.events.clone(); let stats = state.network_stats.clone();
         let active = state.active_connection.clone(); let gate = state.takeover_lock.clone();
         let session = state.active_audio_session.clone(); let plugins = state.plugins.clone();
-        let task = tokio::spawn(handle_client(server, peer, events, audio, stats, ConnectionMode::Wifi, active, gate, session, plugins, cancel));
+        let mode = if identity.is_some() { ConnectionMode::Wifi } else { ConnectionMode::Usb };
+        let task = tokio::spawn(handle_client(server, peer, events, audio, stats, mode, active, gate, session, plugins, cancel, identity));
         (client, task)
     }
 
-    async fn send_frame(socket: &mut TcpStream, message: MessageWrapper) {
+    async fn send_frame<S: tokio::io::AsyncWrite + Unpin>(socket: &mut S, message: MessageWrapper) {
         let payload = message.encode_to_vec();
         socket.write_all(&PACKET_MAGIC.to_be_bytes()).await.unwrap();
         socket.write_all(&(payload.len() as i32).to_be_bytes()).await.unwrap();
         socket.write_all(&payload).await.unwrap();
     }
 
-    async fn connect(socket: &mut TcpStream, session_id: i64) {
+    async fn connect<S: tokio::io::AsyncRead + tokio::io::AsyncWrite + Unpin>(socket: &mut S, session_id: i64) {
         socket.write_all(HANDSHAKE_CLIENT_STR).await.unwrap();
         let mut response = vec![0; HANDSHAKE_SERVER_STR.len()];
         timeout(Duration::from_secs(3), socket.read_exact(&mut response)).await.unwrap().unwrap();
@@ -1187,5 +1227,70 @@ pub(crate) mod admission_tests {
         assert_eq!(events.connects.load(Ordering::SeqCst), 1);
         cancel.cancel();
         timeout(Duration::from_secs(3), winner).await.unwrap().unwrap().unwrap();
+    }
+
+    fn tls_connector(identity: &crate::transport::secure::Identity) -> tokio_rustls::TlsConnector {
+        let mut roots = rustls::RootCertStore::empty(); roots.add(identity.certificate.clone()).unwrap();
+        let config = rustls::ClientConfig::builder().with_root_certificates(roots).with_no_client_auth();
+        tokio_rustls::TlsConnector::from(Arc::new(config))
+    }
+
+    fn credential(identity: &crate::transport::secure::Identity) -> [u8; 32] {
+        let code = identity.pairing_code(); let token = code.rsplit(':').next().unwrap();
+        std::array::from_fn(|i| u8::from_str_radix(&token[i * 2..i * 2 + 2], 16).unwrap())
+    }
+
+    #[tokio::test]
+    async fn paired_wifi_carries_control_and_audio_inside_tls() {
+        let state = ServerState::new(Arc::new(Events::default()), Arc::new(Host), None);
+        let identity = crate::transport::secure::Identity::ephemeral();
+        let (audio, mut packets) = tokio::sync::mpsc::channel(16);
+        let cancel = CancellationToken::new();
+        let (raw, task) = candidate_with_identity(&state, audio, cancel.clone(), Some(identity.clone())).await;
+        let mut client = tls_connector(&identity).connect(rustls::pki_types::ServerName::try_from("localhost").unwrap(), raw).await.unwrap();
+        client.write_all(crate::transport::secure::AUTH_MAGIC).await.unwrap();
+        client.write_all(&credential(&identity)).await.unwrap();
+        client.flush().await.unwrap();
+        let mut ack = [0; 4]; timeout(Duration::from_secs(3), client.read_exact(&mut ack)).await.unwrap().unwrap();
+        assert_eq!(&ack, crate::transport::secure::AUTH_OK);
+        connect(&mut client, 700).await; next_session(&mut packets, 700).await;
+        send_frame(&mut client, MessageWrapper {
+            audio_packet: Some(micyou_protocol::micyou::AudioPacketMessageOrdered {
+                session_id: 700, sequence_number: 0,
+                audio_packet: Some(micyou_protocol::micyou::AudioPacketMessage {
+                    buffer: vec![1, 0, 2, 0], sample_rate: 48000, channel_count: 1, audio_format: 2,
+                    ..Default::default()
+                }), ..Default::default()
+            }), ..Default::default()
+        }).await;
+        let packet = timeout(Duration::from_secs(3), packets.recv()).await.unwrap().unwrap();
+        let AudioStreamEvent::Packet { packet, .. } = packet else { panic!("Expected authenticated audio"); };
+        assert_eq!(packet.audio_packet.unwrap().buffer, vec![1, 0, 2, 0]);
+        cancel.cancel(); timeout(Duration::from_secs(3), task).await.unwrap().unwrap().unwrap();
+    }
+
+    #[tokio::test]
+    async fn wifi_rejects_bad_credentials_plaintext_and_wrong_server_identity() {
+        let state = ServerState::new(Arc::new(Events::default()), Arc::new(Host), None);
+        let identity = crate::transport::secure::Identity::ephemeral();
+        let (audio, mut packets) = tokio::sync::mpsc::channel(16);
+        let cancel = CancellationToken::new();
+        let (raw, task) = candidate_with_identity(&state, audio.clone(), cancel.clone(), Some(identity.clone())).await;
+        let mut client = tls_connector(&identity).connect(rustls::pki_types::ServerName::try_from("localhost").unwrap(), raw).await.unwrap();
+        client.write_all(crate::transport::secure::AUTH_MAGIC).await.unwrap(); client.write_all(&[0; 32]).await.unwrap();
+        client.flush().await.unwrap();
+        assert!(timeout(Duration::from_secs(3), task).await.unwrap().unwrap().is_err());
+        assert!(state.active_connection.lock().await.is_none()); assert!(packets.try_recv().is_err());
+
+        let (mut plain, task) = candidate_with_identity(&state, audio.clone(), cancel.clone(), Some(identity.clone())).await;
+        plain.write_all(HANDSHAKE_CLIENT_STR).await.unwrap();
+        assert!(timeout(Duration::from_secs(3), task).await.unwrap().unwrap().is_err());
+        assert!(state.active_connection.lock().await.is_none()); assert!(packets.try_recv().is_err());
+
+        let wrong_identity = crate::transport::secure::Identity::ephemeral();
+        let (raw, task) = candidate_with_identity(&state, audio, cancel, Some(identity)).await;
+        assert!(tls_connector(&wrong_identity).connect(rustls::pki_types::ServerName::try_from("localhost").unwrap(), raw).await.is_err());
+        assert!(timeout(Duration::from_secs(3), task).await.unwrap().unwrap().is_err());
+        assert!(state.active_connection.lock().await.is_none()); assert!(packets.try_recv().is_err());
     }
 }

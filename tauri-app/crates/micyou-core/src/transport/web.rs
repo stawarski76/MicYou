@@ -725,6 +725,9 @@ impl WebServer {
         events: SharedEvents,
         audio_tx: tokio::sync::mpsc::Sender<(u64, micyou_protocol::micyou::AudioPacketMessage)>,
     ) -> Result<(), String> {
+        // Browser HTML with an unverified self-signed certificate could steal a
+        // pairing credential. Keep this entry point closed for all frontends.
+        require_browser_enrollment()?;
         if self.running.load(Ordering::SeqCst) {
             return Err("Web server is already running".to_string());
         }
@@ -875,4 +878,8 @@ impl WebServer {
         self.running.store(false, Ordering::SeqCst);
         self.client_count.store(0, Ordering::SeqCst);
     }
+}
+
+fn require_browser_enrollment() -> Result<(), String> {
+    Err("Web mode is disabled pending verified certificate enrollment".into())
 }

@@ -63,7 +63,6 @@ onUnmounted(() => {
 const modes: { value: ConnectionMode; icon: typeof Wifi; label: string }[] = [
   { value: 'wifi', icon: Wifi, label: 'Wi-Fi' },
   { value: 'usb', icon: Mic, label: 'USB' },
-  { value: 'web', icon: Globe, label: 'Web' },
 ];
 
 const statusColor = computed(() => {

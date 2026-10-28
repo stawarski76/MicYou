@@ -1,4 +1,18 @@
 {
+  "securePairing": {
+    "title": "Pair this computer with Android",
+    "description": "Reveal the code and paste it into Pairing in the Android app settings. Wi-Fi uses authenticated TLS for both audio and control. Update both apps before connecting.",
+    "secretNotice": "Treat this code as a password. Share it only with a phone you trust. It is not sent through discovery or logs.",
+    "reveal": "Reveal pairing code",
+    "code": "Pairing code",
+    "copy": "Copy code",
+    "copied": "Copied",
+    "hide": "Hide code",
+    "rotateNotice": "Renewing the code stops the server and revokes every previously paired phone. Pair them again with the new code.",
+    "rotate": "Stop server and renew code",
+    "failed": "Could not access pairing. Check the local identity file or try again after stopping the server.",
+    "webUnavailable": "Web mode is temporarily unavailable while certificate trust is redesigned."
+  },
   "app": {
     "connectionMode": "連線模式",
     "port": "連接埠",

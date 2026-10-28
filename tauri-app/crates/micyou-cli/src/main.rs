@@ -85,6 +85,12 @@ enum Commands {
     },
     /// 显示配置文件路径
     Config,
+    /// Show the pairing credential locally; never share it in logs or issues.
+    Pair {
+        /// Revoke all paired phones. Stop Wi-Fi servers first.
+        #[arg(long)]
+        reset: bool,
+    },
     /// 插件开发工具：校验 / 打包 / 生成骨架
     Plugin {
         #[command(subcommand)]
@@ -231,6 +237,11 @@ async fn main() {
         Commands::Config => {
             commands::cmd_config_path();
             Ok(())
+        }
+        Commands::Pair { reset } => {
+            let code = if reset { micyou_core::transport::secure::Identity::rotate() }
+                else { micyou_core::transport::secure::Identity::load().map(|identity| identity.pairing_code()) };
+            code.map(|code| println!("{code}"))
         }
     };
 

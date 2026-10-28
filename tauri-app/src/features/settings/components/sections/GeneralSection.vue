@@ -20,8 +20,11 @@ import { useOutputDevices } from '../../composables/useOutputDevices';
 import { useRestoreDefaults } from '../../composables/useRestoreDefaults';
 import SettingRow from '../SettingRow.vue';
 import VirtualDeviceCard from '../VirtualDeviceCard.vue';
+import PairingPanel from '@/features/connection/components/PairingPanel.vue';
 
 const { t } = useI18n();
+const revealPairing = () => command('get_pairing_code');
+const rotatePairing = () => command('rotate_pairing');
 const { currentLanguage } = useLanguageSetting();
 const {
   closeBehavior,
@@ -93,6 +96,7 @@ onMounted(() => {
 
 <template>
   <div class="space-y-6">
+    <PairingPanel :reveal-code="revealPairing" :rotate-code="rotatePairing" />
     <!-- Run Mode -->
     <div class="bg-surface-bright/60 backdrop-blur-lg rounded-2xl p-4 shadow-xs border border-white/5">
       <div class="flex items-center justify-between">

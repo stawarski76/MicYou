@@ -38,6 +38,8 @@ export interface Commands {
     result: string;
   };
   stop_server: { args: NoArgs; result: string };
+  get_pairing_code: { args: NoArgs; result: string };
+  rotate_pairing: { args: NoArgs; result: string };
   get_streaming_status: { args: NoArgs; result: StreamingStatus };
   set_mute_state: { args: { isMuted: boolean }; result: void };
   set_monitoring: { args: { enabled: boolean }; result: void };

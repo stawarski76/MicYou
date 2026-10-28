@@ -225,6 +225,9 @@ pub async fn start_server(state: &ServerState, request: StartRequest) -> Result<
         bind_address,
         output_device,
     } = request;
+    if mode == ConnectionMode::Web {
+        return Err("Web mode is disabled until verified browser certificate enrollment is available. Use paired Wi-Fi or USB.".into());
+    }
     let udp_port = validate_server_port(port, mode)?;
 
     let _lifecycle_guard = state.lifecycle_gate.enter().await;
@@ -309,12 +312,14 @@ pub async fn start_server(state: &ServerState, request: StartRequest) -> Result<
 
     let udp_port = udp_port.expect("non-web port validation produces a UDP port");
     let (udp_ready_tx, udp_ready_rx) = tokio::sync::oneshot::channel();
+    let start_udp = mode == ConnectionMode::Usb;
     let udp_task = tokio::spawn({
         let stats = state.network_stats.clone();
         let session = state.active_audio_session.clone();
         let bind_addr = bind_addr.clone();
         let token = cancel_token.clone();
         async move {
+            if !start_udp { let _ = udp_ready_tx.send(Ok(())); return; }
             if let Err(e) = crate::transport::udp::start_udp_server(
                 audio_tx,
                 udp_port,

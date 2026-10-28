@@ -41,6 +41,25 @@ pub async fn stop_server(state: State<'_, ServerState>) -> Result<String, String
 }
 
 #[tauri::command]
+pub async fn get_pairing_code() -> Result<String, String> {
+    super::blocking(|| Ok(micyou_core::transport::secure::Identity::load()?.pairing_code())).await
+}
+
+#[tauri::command]
+pub async fn rotate_pairing(state: State<'_, ServerState>) -> Result<String, String> {
+    match micyou_core::server::stop_server(&state).await {
+        Ok(_) => {}
+        Err(error) if error == "Server is not running" => {}
+        Err(error) => return Err(error),
+    }
+    let _guard = state.lifecycle_gate.enter().await;
+    if state.cancel_token.lock().await.is_some() {
+        return Err("Server restarted while rotating credentials; stop it and retry".into());
+    }
+    super::blocking(micyou_core::transport::secure::Identity::rotate).await
+}
+
+#[tauri::command]
 pub async fn get_streaming_status(state: State<'_, ServerState>) -> Result<StreamingStatus, String> {
     Ok(state.streaming_status().await)
 }
