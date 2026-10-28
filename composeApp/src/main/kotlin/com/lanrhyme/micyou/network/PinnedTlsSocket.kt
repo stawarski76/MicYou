@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.ensureActive
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocket
@@ -38,10 +39,15 @@ class PinnedTlsSocket(credentials: PairingCredentials, parent: CoroutineContext)
 
     suspend fun connect(host: String, port: Int) = withContext(Dispatchers.IO) {
         try {
+            socketContext.ensureActive()
             delegate.connect(java.net.InetSocketAddress(host, port), 10000)
             // The pinned TrustManager runs during this handshake, before any
             // application byte (in particular the pairing token) can be sent.
             delegate.startHandshake()
+            // JSSE may return normally when close races with startHandshake.
+            // A closed socket must never be reported as an authenticated one.
+            socketContext.ensureActive()
+            check(!closed.get()) { "TLS socket was closed during connection" }
         } catch (failure: Exception) { close(); throw failure }
     }
 
@@ -50,7 +56,17 @@ class PinnedTlsSocket(credentials: PairingCredentials, parent: CoroutineContext)
         return writer(coroutineContext = Dispatchers.IO, channel = channel) {
             try {
                 val source = delegate.inputStream; val buffer = ByteArray(8192)
-                while (true) { val count = source.read(buffer); if (count < 0) break; channel.writeFully(buffer, 0, count) }
+                while (true) {
+                    val count = source.read(buffer)
+                    if (count < 0) break
+                    channel.writeFully(buffer, 0, count)
+                    // openReadChannel attaches ByteChannel(autoFlush = false).
+                    // Publish each TLS read, including the small pairing ACK.
+                    channel.flush()
+                }
+                // Preserve buffered final bytes and normal EOF before closing
+                // cancels the socket's remaining I/O jobs.
+                channel.flushAndClose()
             } finally { close() }
         }
     }

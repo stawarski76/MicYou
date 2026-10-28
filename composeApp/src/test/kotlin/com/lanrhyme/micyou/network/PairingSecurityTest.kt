@@ -3,6 +3,7 @@ package com.lanrhyme.micyou.network
 import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
 import io.ktor.utils.io.readFully
+import io.ktor.utils.io.readAvailable
 import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.*
 import org.junit.Assert.*
@@ -34,7 +35,7 @@ class PairingSecurityTest {
         val dir = Files.createTempDirectory("ymic-jvm-tls-test-")
         val keystore = dir.resolve("test.p12")
         val log = dir.resolve("keytool.log")
-        val tool = java.io.File(System.getProperty("java.home"), "bin/keytool" + if (System.getProperty("os.name").startsWith("Windows")) ".exe" else "")
+        val tool = java.io.File(System.getProperty("java.home"), "bin/keytool" + if (System.getProperty("os.name", "").startsWith("Windows")) ".exe" else "")
         try {
             val process = ProcessBuilder(tool.absolutePath, "-genkeypair", "-alias", "test", "-storetype", "PKCS12",
                 "-keystore", keystore.toString(), "-storepass", "test-only-password", "-keyalg", "EC", "-groupname", "secp256r1",
@@ -62,7 +63,9 @@ class PairingSecurityTest {
                 val auth = socket.inputStream.readNBytes(40)
                 assertArrayEquals(PairingCredentials.AUTH_MAGIC + credentials.tokenBytes(), auth)
                 socket.outputStream.write(PairingCredentials.AUTH_OK); socket.outputStream.flush()
-                socket.inputStream.readNBytes(5)
+                val audio = socket.inputStream.readNBytes(5)
+                socket.outputStream.write("end".toByteArray()); socket.outputStream.flush()
+                audio
             }
         }
         val client = PinnedTlsSocket(credentials, coroutineContext)
@@ -74,6 +77,9 @@ class PairingSecurityTest {
                 val acknowledgement = ByteArray(4); input.readFully(acknowledgement, 0, 4)
                 assertArrayEquals(PairingCredentials.AUTH_OK, acknowledgement)
                 output.writeFully("audio".toByteArray()); output.flush()
+                val tail = ByteArray(3); input.readFully(tail, 0, tail.size)
+                assertArrayEquals("end".toByteArray(), tail)
+                assertEquals(-1, input.readAvailable(ByteArray(1), 0, 1))
             }
             assertArrayEquals("audio".toByteArray(), received.get(5, TimeUnit.SECONDS))
         } finally { client.close(); server.close(); executor.shutdownNow() }
@@ -85,7 +91,7 @@ class PairingSecurityTest {
         val received = executor.submit<Int> {
             (server.accept() as SSLSocket).use { socket ->
                 socket.soTimeout = 3000
-                try { socket.startHandshake(); socket.inputStream.read() } catch (_: SSLException) { -1 }
+                try { socket.startHandshake(); socket.inputStream.read() } catch (_: java.io.IOException) { -1 }
             }
         }
         val client = PinnedTlsSocket(PairingCredentials.parse("ymic1:$pin:$token"), coroutineContext)
@@ -105,6 +111,10 @@ class PairingSecurityTest {
         try {
             val peer = withContext(Dispatchers.IO) { accepted.get(3, TimeUnit.SECONDS) }
             peer.use {
+                peer.soTimeout = 3000
+                // Wait for the TLS ClientHello so close interrupts an actual
+                // handshake rather than racing before it has started.
+                assertEquals(22, withContext(Dispatchers.IO) { peer.inputStream.read() })
                 client.close()
                 assertTrue(withTimeout(3000) { connecting.await() }.isFailure)
             }
