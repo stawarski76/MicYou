@@ -196,6 +196,8 @@ if (androidCompat) {
 
 dependencies {
     testImplementation("junit:junit:4.13.2")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("com.google.zxing:core:3.5.4")
     if (androidCompat) {
         // 兼容模式：MultiDex 库 + core library desugaring
         implementation("androidx.multidex:multidex:${libs.versions.compat.multidex.get()}")
