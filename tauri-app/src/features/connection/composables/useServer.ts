@@ -48,6 +48,9 @@ export function useServer(options?: { audioLevel?: Ref<number>; isMuted?: Ref<bo
   // Selected connection mode persisted in storage
   const connectionMode = useStorage<ConnectionMode>('micyou_connectionMode', 'wifi');
   
+  // Migrate the retired web selection to the paired native transport.
+  if (connectionMode.value === 'web') connectionMode.value = 'wifi';
+
   // Port for streaming under Wi-Fi or USB modes
   const serverPort = useStorage<number>('micyou_serverPort', 8554);
   
@@ -348,7 +351,7 @@ export function useServer(options?: { audioLevel?: Ref<number>; isMuted?: Ref<bo
       if (!prefs) return;
       if (prefs.port) serverPort.value = prefs.port;
       if (prefs.webPort) webPort.value = prefs.webPort;
-      if (prefs.mode && ['wifi', 'usb', 'web'].includes(prefs.mode)) {
+      if (prefs.mode && ['wifi', 'usb'].includes(prefs.mode)) {
         connectionMode.value = prefs.mode as ConnectionMode;
       }
       if (prefs.autoBind !== undefined) isAutoBind.value = prefs.autoBind;

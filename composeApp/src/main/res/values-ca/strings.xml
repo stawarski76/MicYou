@@ -391,4 +391,20 @@
     <string name="qs_toast_stopped">Streaming stopped</string>
     <string name="firstLaunchDownloadPc">下载电脑端喵~</string>
     <string name="errorSuggestionCheckSettings">检查系统设置中的应用权限喵~</string>
+    <string name="securePairingTitle">Pairing</string>
+    <string name="securePairingDescription">Scan the pairing QR code from the desktop app, or paste the code below. Wi-Fi requires Android 6 or later and uses authenticated TLS.</string>
+    <string name="securePairingCode">Computer pairing code</string>
+    <string name="securePairingSaved">A computer is paired. IP and port are still entered on the connection screen.</string>
+    <string name="securePairingSave">Save pairing</string>
+    <string name="securePairingForget">Forget computer</string>
+    <string name="securePairingFailed">Could not save or read pairing. Check the code or pair the phone again.</string>
+    <string name="securePairingRequired">Pair this phone in app settings before using Wi-Fi. Android 6 or later is required for secure Wi-Fi; USB is still available.</string>
+    <string name="securePairingScan">Scan QR code</string>
+    <string name="securePairingScanPrompt">Scan the pairing QR code displayed in the desktop app settings</string>
+    <string name="securePairingInvalidQr">This QR code is not a valid MicYou pairing code. Your saved pairing has not changed.</string>
+    <string name="securePairingCameraDenied">Camera access is required to scan the pairing QR code. You can also paste the code below.</string>
+    <string name="securePairingScanSaved">Pairing saved. Return to the main screen, select your computer and connect. The microphone has not started yet.</string>
+    <string name="securePairingScanCancelled">Scanning ended without a pairing code. Your saved pairing has not changed.</string>
+    <string name="securePairingScanUnavailable">Stop the audio connection before importing a pairing code.</string>
+    <string name="securePairingSaving">Saving pairing securely…</string>
 </resources>

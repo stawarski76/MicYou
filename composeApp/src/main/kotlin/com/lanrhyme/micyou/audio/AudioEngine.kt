@@ -15,6 +15,9 @@
 
 package com.lanrhyme.micyou.audio
 import com.lanrhyme.micyou.R
+import com.lanrhyme.micyou.network.PairingStore
+import com.lanrhyme.micyou.network.PairingCredentials
+import com.lanrhyme.micyou.network.PinnedTlsSocket
 
 import android.content.Intent
 import android.media.AudioRecord
@@ -526,6 +529,10 @@ class AudioEngine constructor() {
                         if (lifecycleGeneration != sessionGeneration || !desiredRunning) {
                             throw CancellationException("Audio session superseded before initialization")
                         }
+                        val pairing = if (mode == ConnectionMode.Wifi) {
+                            try { PairingStore.load(requireNotNull(ContextHelper.getContext())) }
+                            catch (failure: Exception) { throw IllegalStateException(getString(R.string.securePairingRequired), failure) }
+                        } else null
                         val androidSampleRate = sampleRate.value
                         // Opus 编码器仅支持 8/12/16/24/48kHz；把 44.1kHz 采集映射到 48kHz，
                         // 保证线上 codec 始终合法（44.1kHz 单独配置的用户极少）。
@@ -632,13 +639,25 @@ class AudioEngine constructor() {
                         Logger.i("AudioEngine", "Connecting with protocol $transportProtocol to $targetIp:$port")
 
                         // TCP-only 模式或 Both 模式：需要 TCP 连接进行握手
-                        if (transportProtocol == TransportProtocol.Tcp || transportProtocol == TransportProtocol.Both) {
+                        if (mode == ConnectionMode.Wifi || transportProtocol == TransportProtocol.Tcp || transportProtocol == TransportProtocol.Both) {
                             Logger.i("AudioEngine", "Connecting via TCP to $targetIp:$port")
-                            val socketBuilder = aSocket(sessionSelectorManager)
-                            tcpSocket = socketBuilder.tcp().connect(targetIp, port) {
-                                keepAlive = true
-                                socketTimeout = 10000L
-                                noDelay = true
+                            if (mode == ConnectionMode.Wifi) {
+                                val secure = PinnedTlsSocket(requireNotNull(pairing), currentCoroutineContext())
+                                tcpSocket = secure
+                                // Publish the close handle before the blocking handshake so
+                                // cancellation/Stop can interrupt connect and TLS reads.
+                                closeConnection = { secure.close() }
+                                startStopMutex.withLock {
+                                    if (lifecycleGeneration != sessionGeneration || !desiredRunning) {
+                                        secure.close(); throw CancellationException("Audio session superseded before TLS")
+                                    }
+                                    activeTcpSocket = secure
+                                }
+                                secure.connect(targetIp, port)
+                            } else {
+                                tcpSocket = aSocket(sessionSelectorManager).tcp().connect(targetIp, port) {
+                                    keepAlive = true; socketTimeout = 10000L; noDelay = true
+                                }
                             }
                             Logger.i("AudioEngine", "TCP connected to $targetIp:$port")
                             input = tcpSocket.openReadChannel()
@@ -653,24 +672,7 @@ class AudioEngine constructor() {
                             }
                         }
 
-                        // UDP 音频传输：WiFi 模式下且协议为 TCP+UDP
-                        if (mode == ConnectionMode.Wifi && transportProtocol == TransportProtocol.Both) {
-                            val udpPort = calculateUdpPort(port)
-                            Logger.i("AudioEngine", "Connecting via UDP to $targetIp:$udpPort")
-                            sessionUdpSocket = DatagramSocket().also {
-                                it.sendBufferSize = 256 * 1024 // 256KB send buffer
-                                Logger.d("AudioEngine", "UDP send buffer: ${it.sendBufferSize / 1024}KB")
-                            }
-                            sessionUdpAddress = InetSocketAddress(targetIp, udpPort)
-                            startStopMutex.withLock {
-                                if (lifecycleGeneration != sessionGeneration || !desiredRunning) {
-                                    throw CancellationException("Audio session superseded during UDP setup")
-                                }
-                                udpSocket = sessionUdpSocket
-                                udpServerAddress = sessionUdpAddress
-                            }
-                            Logger.i("AudioEngine", "UDP connected to $targetIp:$udpPort")
-                        }
+                        // Wi-Fi audio and control both use the authenticated TLS stream.
 
                         closeConnection = {
                             tcpSocket?.close()
@@ -681,6 +683,14 @@ class AudioEngine constructor() {
                         if (tcpSocket != null) {
                             val out = output ?: throw IllegalStateException("TCP output channel unavailable")
                             val inChannel = input ?: throw IllegalStateException("TCP input channel unavailable")
+                            if (pairing != null) {
+                                out.writeFully(PairingCredentials.AUTH_MAGIC)
+                                out.writeFully(pairing.tokenBytes())
+                                out.flush()
+                                val acknowledgement = ByteArray(4)
+                                inChannel.readFully(acknowledgement, 0, acknowledgement.size)
+                                check(acknowledgement.contentEquals(PairingCredentials.AUTH_OK)) { "Pairing authentication failed" }
+                            }
                             Logger.d("AudioEngine", "Starting handshake")
                             out.writeFully(HANDSHAKE_CLIENT.encodeToByteArray())
                             out.flush()
@@ -740,10 +750,7 @@ class AudioEngine constructor() {
                             for (msg in channel) {
                                 try {
                                     // 根据传输协议决定发送方式
-                                    val shouldUseUdp = when (transportProtocol) {
-                                        TransportProtocol.Tcp -> false // 仅使用 TCP
-                                        TransportProtocol.Both -> mode == ConnectionMode.Wifi && !msg.hasControlMessage() // Both 模式下，WiFi 模式下音频走 UDP
-                                    }
+                                    val shouldUseUdp = false // No plaintext Wi-Fi fallback.
 
                                     val localUdpSocket = sessionUdpSocket
                                     val localUdpAddress = sessionUdpAddress

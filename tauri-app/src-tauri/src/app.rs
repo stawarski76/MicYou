@@ -146,6 +146,8 @@ pub fn run() {
             tray::set_tray_strings,
             tray::set_tray_state,
             commands::server::start_server,
+            commands::server::get_pairing_code,
+            commands::server::rotate_pairing,
             commands::server::stop_server,
             commands::server::get_streaming_status,
             commands::server::set_mute_state,

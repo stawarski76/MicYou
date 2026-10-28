@@ -111,7 +111,6 @@ import com.lanrhyme.micyou.util.getAppVersion
 import com.lanrhyme.micyou.util.OpenSourceLibrariesList
 import com.lanrhyme.micyou.viewmodel.AppUiState
 import com.lanrhyme.micyou.viewmodel.MainViewModel
-import com.lanrhyme.micyou.viewmodel.TransportProtocol
 import com.lanrhyme.micyou.viewmodel.VisualizerStyle
 
 /**
@@ -177,6 +176,11 @@ fun MobileSettingsPage(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             item { Spacer(modifier = Modifier.height(32.dp)) }
+
+            item(key = "secure-pairing") {
+                PairingSetupCard(enabled = state.streamState != com.lanrhyme.micyou.viewmodel.StreamState.Streaming &&
+                    state.streamState != com.lanrhyme.micyou.viewmodel.StreamState.Connecting)
+            }
 
             // General Section
             item { SectionHeader(stringResource(R.string.generalSection)) }
@@ -282,21 +286,6 @@ private fun LazyListScope.generalSettingsItems(
                 options = AppLanguage.entries.toList(),
                 labelProvider = { it.label },
                 onSelect = { viewModel.setLanguage(it) },
-                isFirst = isFirst,
-                isLast = isLast,
-                containerColor = containerColor,
-                hazeState = hazeState,
-                enableHaze = enableHaze
-            )
-        }
-
-        items.add { isFirst, isLast ->
-            ExpressiveSettingsDropdownItem(
-                headline = stringResource(R.string.transportProtocolLabel),
-                selected = state.transportProtocol,
-                options = TransportProtocol.entries.toList(),
-                labelProvider = { it.label },
-                onSelect = { viewModel.setTransportProtocol(it) },
                 isFirst = isFirst,
                 isLast = isLast,
                 containerColor = containerColor,

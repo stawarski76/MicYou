@@ -2,9 +2,9 @@ name: Security baseline
 
 on:
   push:
-    branches: ['codex/security-hardening']
+    branches: ['codex/security-hardening', 'codex/secure-pairing']
   pull_request:
-    branches: ['master']
+    branches: ['master', 'codex/security-hardening']
   workflow_dispatch:
 
 permissions:
@@ -49,3 +49,17 @@ jobs:
       # the full shared backend workspace here; GUI packaging is a later gate.
       - run: cargo test --workspace --exclude micyou-app --locked
       - run: cargo clippy --workspace --exclude micyou-app --all-targets --locked
+
+  android-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: chmod +x gradlew
+      - run: ./gradlew :composeApp:testDebugUnitTest :composeApp:assembleDebug --no-daemon
