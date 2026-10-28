@@ -1,4 +1,4 @@
-﻿#define MyAppName "MicYou"
+#define MyAppName "MicYou"
 #ifndef MyAppVersion
   #define MyAppVersion "2.1.1"
 #endif
@@ -31,8 +31,8 @@ SetupIconFile=icons\icon.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
 [Languages]
-Name: "chinesesimplified"; MessagesFile: "compiler:Default.isl,SimpChinese.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "chinesesimplified"; MessagesFile: "compiler:Default.isl,SimpChinese.isl"
 
 [Messages]
 ; The firewall task is only offered in admin ("all users") install mode, so the
@@ -111,6 +111,20 @@ begin
   ExecNetsh('advfirewall firewall delete rule name="{#MyAppName}"');
   ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} CLI"');
   ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} TUI"');
+  ExecNetsh('advfirewall firewall delete rule name="MicYou App (TCP-In)"');
+  ExecNetsh('advfirewall firewall delete rule name="MicYou App (UDP-In)"');
+  ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} TCP"');
+  ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} UDP"');
+  ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} CLI TCP"');
+  ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} CLI UDP"');
+  ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} TUI TCP"');
+  ExecNetsh('advfirewall firewall delete rule name="{#MyAppName} TUI UDP"');
+end;
+
+procedure AddPrivateLanRules(const RuleName, ProgramPath: String);
+begin
+  ExecNetsh('advfirewall firewall add rule name="' + RuleName + ' TCP" dir=in action=allow enable=yes profile=private remoteip=LocalSubnet protocol=TCP program="' + ProgramPath + '"');
+  ExecNetsh('advfirewall firewall add rule name="' + RuleName + ' UDP" dir=in action=allow enable=yes profile=private remoteip=LocalSubnet protocol=UDP program="' + ProgramPath + '"');
 end;
 
 procedure AddFirewallRules;
@@ -120,9 +134,9 @@ begin
   AppDir := ExpandConstant('{app}');
   // Delete first so re-installs/upgrades never leave duplicate rules behind.
   RemoveFirewallRules;
-  ExecNetsh('advfirewall firewall add rule name="{#MyAppName}" dir=in action=allow enable=yes profile=any program="' + AppDir + '\{#MyAppExeName}"');
-  ExecNetsh('advfirewall firewall add rule name="{#MyAppName} CLI" dir=in action=allow enable=yes profile=any program="' + AppDir + '\{#MyCliExeName}"');
-  ExecNetsh('advfirewall firewall add rule name="{#MyAppName} TUI" dir=in action=allow enable=yes profile=any program="' + AppDir + '\{#MyTuiExeName}"');
+  AddPrivateLanRules('{#MyAppName}', AppDir + '\{#MyAppExeName}');
+  AddPrivateLanRules('{#MyAppName} CLI', AppDir + '\{#MyCliExeName}');
+  AddPrivateLanRules('{#MyAppName} TUI', AppDir + '\{#MyTuiExeName}');
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);

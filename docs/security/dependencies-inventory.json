@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-10-27T13:04:02.650Z",
+  "scope": "Static coordinates from Cargo.lock and bun.lock, including platform/build/dev dependencies. No reachability analysis; excludes Gradle, git dependencies, vendored binaries and installed artifacts.",
+  "hashes": {
+    "cargo": "592ab7ef882dc0ba07ea82c479aa476c93bedfa2ba6998314befa6ea2119a6e4",
+    "bun": "c8b496d0ccfc11c269dade5c3d70d22bb88ad8204b3282032c4365fba15ed92b"
+  },
+  "counts": {
+    "crates.io": 800,
+    "npm": 214
+  },
+  "exclusions": [
+    {
+      "name": "micyou-app",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-audio",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-cli",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-core",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-infer",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-plugin",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-plugin-fixture-native",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-protocol",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "micyou-tui",
+      "version": "2.1.1",
+      "source": "workspace"
+    },
+    {
+      "name": "opus-decoder",
+      "version": "0.1.1",
+      "source": "git+https://github.com/tfr0305/Rusopus.git?branch=master#025a8e4e77fa544b66c4ad90cf49efe684a45faf"
+    }
+  ],
+  "online": false,
+  "matches": []
+}

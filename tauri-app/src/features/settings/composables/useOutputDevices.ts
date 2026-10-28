@@ -1,11 +1,9 @@
 import { computed, ref } from 'vue';
 import {
   command,
-  onEvent,
   openUrl,
   type BlackHoleStatus,
   type PipeWireStatus,
-  type UnlistenFn,
 } from '@/platform';
 import { isLinux, isMacOS, isWindows } from '@/shared/lib/os';
 import { useAudioSettings } from './useAudioSettings';
@@ -19,8 +17,6 @@ export const supportedDistros = [
 
 const audioDevices = ref<string[]>([]);
 const vbcableDetected = ref(false);
-const vbcableInstalling = ref(false);
-const vbcableInstallProgress = ref('');
 const blackholeStatus = ref<BlackHoleStatus>({
   installed: false,
   switch_audio_source: false,
@@ -93,28 +89,6 @@ async function fetchDevices() {
   void checkPipeWireStatus();
 }
 
-async function installVBCable() {
-  vbcableInstalling.value = true;
-  vbcableInstallProgress.value = '';
-  let unlisten: UnlistenFn | null = null;
-  try {
-    unlisten = await onEvent('vbcable-install-progress', (payload) => {
-      vbcableInstallProgress.value = payload;
-    });
-    const result = await command('install_vbcable');
-    if (result.success) {
-      await checkVBCableStatus();
-      audioDevices.value = await command('get_audio_devices');
-    }
-  } catch (e) {
-    console.error('VB-CABLE install failed:', e);
-  } finally {
-    unlisten?.();
-    vbcableInstalling.value = false;
-    vbcableInstallProgress.value = '';
-  }
-}
-
 export function useOutputDevices() {
   const { settings } = useAudioSettings();
 
@@ -145,13 +119,10 @@ export function useOutputDevices() {
     pipewireStatus,
     selectedDistro,
     currentPipewireInstallCommand,
-    vbcableInstalling,
-    vbcableInstallProgress,
     isVirtualDeviceSelected,
     isExplicitPhysicalDevice: computed(() => !isAutoSelected.value && !isVirtualDeviceSelected.value),
     isAutoFallbackToPhysical: computed(() => isAutoSelected.value && !isVirtualDeviceSelected.value),
     fetchDevices,
-    installVBCable,
     openVBCableDownload: () => openUrl('https://vb-audio.com/Cable/'),
     openBlackHoleDownload: () => openUrl('https://github.com/ExistentialAudio/BlackHole'),
   };

@@ -157,10 +157,12 @@ fn fetch_manifest(client: &reqwest::blocking::Client, url: &str) -> Result<Plugi
 }
 
 pub fn preview_zip(zip_path: &Path) -> Result<PluginPreview, String> {
+    super::require_external_plugins().map_err(|e| e.to_string())?;
     Ok(read_manifest_from_zip(zip_path)?.0.into())
 }
 
 pub fn preview_url(manifest_url: &str) -> Result<PluginPreview, String> {
+    super::require_external_plugins().map_err(|e| e.to_string())?;
     Ok(fetch_manifest(&http_client(MANIFEST_FETCH_TIMEOUT)?, manifest_url)?.into())
 }
 
@@ -430,6 +432,7 @@ impl PluginHost {
 
     /// HTML of a plugin UI panel.
     pub fn panel_html(&self, plugin_id: &str, panel_id: &str) -> Result<String, String> {
+        super::require_external_plugins().map_err(|e| e.to_string())?;
         let manager = self.manager.lock().map_err(|e| lock_err(e).to_string())?;
         let entry = manager
             .entry(plugin_id)
@@ -462,6 +465,7 @@ impl PluginHost {
 
     /// Install from a plugin folder or a .zip file.
     pub fn import(self: &Arc<Self>, source: &Path) -> Result<String, String> {
+        super::require_external_plugins().map_err(|e| e.to_string())?;
         if !source.exists() {
             return Err(format!("source not found: {}", source.display()));
         }
@@ -483,6 +487,7 @@ impl PluginHost {
     /// Download a plugin zip from the market and install it. Blocking; run
     /// it off the async runtime.
     pub fn install_from_url(self: &Arc<Self>, id: &str, zip_url: &str) -> Result<String, String> {
+        super::require_external_plugins().map_err(|e| e.to_string())?;
         // The id names the temp file below; it comes from the market listing.
         if !micyou_plugin::manifest::validate_plugin_id(id) {
             return Err(format!("invalid plugin id {id:?}"));
@@ -524,6 +529,7 @@ impl PluginHost {
     /// Installed plugins whose `updateUrl` manifest has a newer version.
     /// Blocking; run it off the async runtime.
     pub fn check_updates(&self) -> Result<Vec<PluginUpdate>, String> {
+        super::require_external_plugins().map_err(|e| e.to_string())?;
         let entries = self
             .manager
             .lock()
@@ -558,6 +564,7 @@ impl PluginHost {
     /// Replace an installed plugin with the version its `updateUrl` points
     /// at. Blocking; run it off the async runtime.
     pub fn update(self: &Arc<Self>, id: &str) -> Result<String, String> {
+        super::require_external_plugins().map_err(|e| e.to_string())?;
         let (update_url, was_enabled) = {
             let manager = self.manager.lock().map_err(|e| lock_err(e).to_string())?;
             let entry = manager

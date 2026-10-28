@@ -600,6 +600,8 @@
     "startUsing": "开始使用"
   },
   "vbcableDetect": {
+    "manualSetupNotice": "Automatic driver installation is temporarily unavailable. Download VB-CABLE from the official website, install it yourself, then check again. Windows may require a restart.",
+    "checkAgain": "Check again",
     "title": "需要 VB-Cable 驱动",
     "message": "VB-Cable 驱动是 MicYou 在 Windows 上作为虚拟麦克风工作所必需的，您想自动安装吗？",
     "autoInstall": "自动安装",
@@ -619,6 +621,7 @@
     "retry": "重试"
   },
   "plugins": {
+    "securityDisabled": "Third-party plugins are temporarily unavailable while security fixes are being verified.",
     "title": "插件",
     "desc": "使用原生或 WASM 插件扩展 MicYou",
     "refresh": "刷新",

@@ -26,6 +26,9 @@ mod logs;
 pub mod sound_player;
 mod sync;
 
+#[cfg(test)]
+mod quarantine_tests;
+
 pub use chain::{reconcile_plugin_chain, PLUGIN_NODE_AFTER};
 pub use logs::PluginLogs;
 pub use sync::TcpPluginSyncAdapter;
@@ -73,6 +76,15 @@ pub struct PluginHost {
 
 pub(crate) fn lock_err<T>(_: std::sync::PoisonError<T>) -> PluginError {
     PluginError::Runtime("plugin host lock poisoned".into())
+}
+
+/// Fail closed until plugin approvals are bound to the installed artifact
+/// and writable plugin data is isolated from manifests and executable code.
+/// This applies to GUI, CLI and TUI; UI controls are not a security boundary.
+pub fn require_external_plugins() -> PluginResult<()> {
+    Err(PluginError::PermissionDenied(
+        "external plugins are disabled by the security quarantine".into(),
+    ))
 }
 
 impl PluginHost {
@@ -137,7 +149,8 @@ impl PluginHost {
             .ok_or_else(|| PluginError::Runtime("server controls are not attached".into()))
     }
 
-    /// Scan the plugin directory and start every plugin marked enabled.
+    /// Retain installed-plugin metadata for cleanup, but never restore code
+    /// execution from an upstream installation's persisted enabled flags.
     pub fn load_saved_plugins(self: &Arc<Self>) {
         let report = match self.manager.lock().map_err(lock_err).and_then(|mut m| m.scan()) {
             Ok(report) => report,
@@ -148,8 +161,10 @@ impl PluginHost {
         };
         for entry in report.discovered {
             if entry.state.is_enabled() {
-                if let Err(e) = self.enable_plugin(&entry.manifest.id) {
-                    log::warn!("[plugins] failed to start {}: {e}", entry.manifest.id);
+                if let Err(e) = self.manager.lock().map_err(lock_err).and_then(|mut manager| {
+                    manager.set_enabled(&entry.manifest.id, false)
+                }) {
+                    log::warn!("[plugins] failed to persist quarantine for {}: {e}", entry.manifest.id);
                 }
             }
         }
@@ -199,6 +214,7 @@ impl PluginHost {
     }
 
     pub fn enable_plugin(self: &Arc<Self>, id: &str) -> PluginResult<()> {
+        require_external_plugins()?;
         let entry = {
             let manager = self.manager.lock().map_err(lock_err)?;
             if manager.is_loaded(id) {

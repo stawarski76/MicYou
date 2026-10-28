@@ -14,10 +14,6 @@
  */
 
 use serde::Serialize;
-#[cfg(feature = "vbcable")]
-use std::path::{Path, PathBuf};
-#[cfg(feature = "vbcable")]
-use std::sync::atomic::{AtomicBool, Ordering};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct VBCableResult {
@@ -105,236 +101,15 @@ pub fn is_installed() -> bool {
     false
 }
 
+/// Automatic installation is quarantined until downloaded artifacts can be
+/// authenticated and protected from replacement before elevation. Keep this
+/// boundary for GUI/CLI callers, without any network, filesystem or UAC work.
 #[cfg(feature = "vbcable")]
-static IS_INSTALLING: AtomicBool = AtomicBool::new(false);
-
-#[cfg(feature = "vbcable")]
-const INSTALLER_URL: &str =
-    "https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip";
-#[cfg(feature = "vbcable")]
-const INSTALLER_NAME: &str = "VBCABLE_Setup_x64.exe";
-#[cfg(feature = "vbcable")]
-const INSTALLER_DIR: &str = "VBCABLE_Driver_Pack45";
-
-#[cfg(feature = "vbcable")]
-fn temp_dir() -> PathBuf {
-    std::env::temp_dir().join("micyou_vbcable")
-}
-
-#[cfg(feature = "vbcable")]
-async fn download_installer(events: &crate::events::SharedEvents) -> Result<PathBuf, String> {
-    let dir = temp_dir();
-    tokio::fs::create_dir_all(&dir)
-        .await
-        .map_err(|e| format!("create temp dir: {e}"))?;
-
-    let zip_path = dir.join("vbcable_pack.zip");
-
-    events.install_progress("Downloading installer...".to_string());
-
-    let bytes = reqwest::get(INSTALLER_URL)
-        .await
-        .map_err(|e| format!("download failed: {e}"))?
-        .bytes()
-        .await
-        .map_err(|e| format!("read response: {e}"))?;
-
-    tokio::fs::write(&zip_path, &bytes)
-        .await
-        .map_err(|e| format!("write zip: {e}"))?;
-
-    events.install_progress("Extracting installer...".to_string());
-
-    let extract_dir = dir.join(INSTALLER_DIR);
-    tokio::fs::create_dir_all(&extract_dir)
-        .await
-        .map_err(|e| format!("create extract dir: {e}"))?;
-
-    let zip_path_clone = zip_path.clone();
-    let extract_dir_clone = extract_dir.clone();
-    tokio::task::spawn_blocking(move || {
-        let file = std::fs::File::open(&zip_path_clone).map_err(|e| format!("open zip: {e}"))?;
-        let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("read zip: {e}"))?;
-        archive
-            .extract(&extract_dir_clone)
-            .map_err(|e| format!("extract zip: {e}"))
-    })
-    .await
-    .map_err(|e| format!("spawn blocking: {e}"))??;
-
-    // Clean up zip
-    tokio::fs::remove_file(&zip_path).await.ok();
-
-    // Find the installer exe
-    let installer = extract_dir.join(INSTALLER_NAME);
-    if installer.exists() {
-        Ok(installer)
-    } else {
-        Err(format!("{INSTALLER_NAME} not found in extracted archive"))
-    }
-}
-
-#[cfg(feature = "vbcable")]
-async fn run_installer(installer_path: &Path) -> Result<(), String> {
-    let path_str = installer_path.to_string_lossy().to_string();
-    let cmd = format!(
-        "Start-Process -FilePath '{}' -ArgumentList '-i','-h' -Verb RunAs -Wait",
-        path_str.replace('\'', "''")
-    );
-
-    let output = tokio::process::Command::new("powershell")
-        .args(["-Command", &cmd])
-        .output()
-        .await
-        .map_err(|e| format!("run powershell: {e}"))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        if stderr.contains("elevation") || stderr.contains("administrator") {
-            return Err("uac_denied".to_string());
-        }
-        return Err(format!("installer exit code: {}", output.status));
-    }
-
-    Ok(())
-}
-
-#[cfg(feature = "vbcable")]
-async fn wait_for_device(max_secs: u64) -> bool {
-    if is_installed() {
-        return true;
-    }
-    let mut waited = 0u64;
-    while waited < max_secs {
-        tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-        waited += 2;
-        if is_installed() {
-            return true;
-        }
-    }
-    false
-}
-
-#[cfg(feature = "vbcable")]
-fn cleanup_temp_files() {
-    let dir = temp_dir();
-    let _ = std::fs::remove_dir_all(&dir);
-}
-
-#[cfg(feature = "vbcable")]
-async fn configure_devices(events: &crate::events::SharedEvents) -> Result<(), String> {
-    events.install_progress("Configuring devices...".to_string());
-    let scripts = vec![
-        "Get-PnpDevice -FriendlyName '*CABLE Output*' | Where-Object { $_.Status -eq 'OK' } | ForEach-Object { Write-Host \"Found: $($_.FriendlyName)\" }",
-    ];
-    for script in scripts {
-        let _ = tokio::process::Command::new("powershell")
-            .args(["-Command", script])
-            .output()
-            .await;
-    }
-    Ok(())
-}
-
-#[cfg(feature = "vbcable")]
-pub async fn install(events: crate::events::SharedEvents) -> VBCableResult {
-    if IS_INSTALLING
-        .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-        .is_err()
-    {
-        return VBCableResult {
-            success: false,
-            error_type: Some("already_installing".to_string()),
-            message: Some("Installation already in progress".to_string()),
-        };
-    }
-
-    let result = install_inner(&events).await;
-    IS_INSTALLING.store(false, Ordering::SeqCst);
-
-    match &result {
-        VBCableResult { success: true, .. } => {
-            events.install_progress("Installation complete".to_string());
-        }
-        VBCableResult {
-            error_type: Some(et),
-            ..
-        } => {
-            events.install_progress(format!("Failed: {et}"));
-        }
-        _ => {}
-    }
-
-    cleanup_temp_files();
-    result
-}
-
-#[cfg(feature = "vbcable")]
-async fn install_inner(events: &crate::events::SharedEvents) -> VBCableResult {
-    if is_installed() {
-        events.install_progress("Configuring devices...".to_string());
-        if let Err(e) = configure_devices(events).await {
-            return VBCableResult {
-                success: true,
-                error_type: Some("config_failed".to_string()),
-                message: Some(format!("Installed but configuration failed: {e}")),
-            };
-        }
-        return VBCableResult {
-            success: true,
-            error_type: None,
-            message: Some("Already installed".to_string()),
-        };
-    }
-
-    let installer_path = match download_installer(events).await {
-        Ok(p) => p,
-        Err(e) => {
-            return VBCableResult {
-                success: false,
-                error_type: Some("download_failed".to_string()),
-                message: Some(e),
-            };
-        }
-    };
-
-    events.install_progress("Installing (requires admin approval)...".to_string());
-
-    if let Err(e) = run_installer(&installer_path).await {
-        let error_type = if e == "uac_denied" {
-            "uac_denied"
-        } else {
-            "install_failed"
-        };
-        return VBCableResult {
-            success: false,
-            error_type: Some(error_type.to_string()),
-            message: Some(e),
-        };
-    }
-
-    events.install_progress("Waiting for device initialization...".to_string());
-
-    if !wait_for_device(30).await {
-        return VBCableResult {
-            success: false,
-            error_type: Some("timeout".to_string()),
-            message: Some("Device not detected after 30 seconds".to_string()),
-        };
-    }
-
-    if let Err(e) = configure_devices(events).await {
-        return VBCableResult {
-            success: true,
-            error_type: Some("config_failed".to_string()),
-            message: Some(format!("Installed but configuration failed: {e}")),
-        };
-    }
-
+pub async fn install(_events: crate::events::SharedEvents) -> VBCableResult {
     VBCableResult {
-        success: true,
-        error_type: None,
-        message: Some("Installation and configuration complete".to_string()),
+        success: false,
+        error_type: Some("manual_install_required".to_string()),
+        message: Some("Automatic VB-CABLE installation is disabled. Install manually from https://vb-audio.com/Cable/ and restart MicYou.".to_string()),
     }
 }
 
@@ -345,5 +120,37 @@ mod tests {
     #[test]
     fn test_is_installed_runs_without_panic() {
         let _ = is_installed();
+    }
+
+    #[cfg(feature = "vbcable")]
+    struct NoInstallationEvents;
+
+    #[cfg(feature = "vbcable")]
+    impl crate::events::ServerEvents for NoInstallationEvents {
+        fn device_connected(&self, _: crate::transport::tcp::DeviceInfo) { panic!("unexpected event") }
+        fn device_disconnected(&self) { panic!("unexpected event") }
+        fn audio_metrics(&self, _: crate::stats::AudioMetrics) { panic!("unexpected event") }
+        fn udp_audio_warning(&self) { panic!("unexpected event") }
+        fn mute_state_changed(&self, _: bool) { panic!("unexpected event") }
+        fn audio_level(&self, _: u32) { panic!("unexpected event") }
+        fn audio_spectrum(&self, _: crate::events::SpectrumPayload) { panic!("unexpected event") }
+        fn server_stopped(&self) { panic!("unexpected event") }
+        fn web_client_count(&self, _: u32) { panic!("unexpected event") }
+        fn install_progress(&self, _: String) { panic!("quarantine must not start installation") }
+        fn aec_status_changed(&self, _: crate::events::AecStatus) { panic!("unexpected event") }
+        fn monitoring_state_changed(&self, _: bool) { panic!("unexpected event") }
+        fn plugin_download_progress(&self, _: crate::events::DownloadProgress) { panic!("unexpected event") }
+    }
+
+    #[cfg(feature = "vbcable")]
+    #[tokio::test]
+    async fn automatic_installation_returns_manual_required_without_starting_work() {
+        let events = std::sync::Arc::new(NoInstallationEvents);
+        let result = tokio::time::timeout(std::time::Duration::from_secs(1), install(events))
+            .await
+            .expect("quarantine must return immediately");
+        assert!(!result.success);
+        assert_eq!(result.error_type.as_deref(), Some("manual_install_required"));
+        assert!(result.message.unwrap().contains("https://vb-audio.com/Cable/"));
     }
 }

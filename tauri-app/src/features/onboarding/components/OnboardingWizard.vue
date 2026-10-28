@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { X, CheckCircle2, Download, Loader2, ArrowRight } from '@lucide/vue';
-import { command, onEvent, openUrl } from '@/platform';
-import { useListeners } from '@/shared/lib/listeners';
+import { X, CheckCircle2, ArrowRight } from '@lucide/vue';
+import { command, openUrl } from '@/platform';
+import VBCableManualSetup from './VBCableManualSetup.vue';
 import { isWindows } from '@/shared/lib/os';
 
 const { t } = useI18n();
@@ -16,34 +16,23 @@ defineProps<{
 
 const step = ref(1);
 const vbcableInstalled = ref(false);
-const installing = ref(false);
-const installProgress = ref('');
-const installError = ref('');
-const installSuccess = ref(false);
 
-const track = useListeners();
-
-const TOTAL_STEPS_WINDOWS = 4;
+const TOTAL_STEPS_WINDOWS = 3;
 const TOTAL_STEPS_OTHER = 2;
 
 const totalSteps = isWindows ? TOTAL_STEPS_WINDOWS : TOTAL_STEPS_OTHER;
 
-onMounted(async () => {
-  if (isWindows) {
-    try {
-      vbcableInstalled.value = await command('check_vbcable');
-      if (vbcableInstalled.value) {
-        step.value = 4;
-      }
-    } catch (e) {
-      console.error('Failed to check VB-CABLE:', e);
-    }
+async function checkVBCableStatus() {
+  if (!isWindows) return;
+  try {
+    vbcableInstalled.value = await command('check_vbcable');
+    if (vbcableInstalled.value) step.value = 3;
+  } catch (e) {
+    console.error('Failed to check VB-CABLE:', e);
   }
+}
 
-  await track(onEvent('vbcable-install-progress', (payload) => {
-    installProgress.value = payload;
-  }));
-});
+onMounted(checkVBCableStatus);
 
 function nextStep() {
   if (step.value < totalSteps) {
@@ -53,7 +42,7 @@ function nextStep() {
 
 function skip() {
   if (isWindows && step.value === 1) {
-    step.value = 4;
+    step.value = 3;
   } else {
     complete();
   }
@@ -62,28 +51,6 @@ function skip() {
 function complete() {
   localStorage.setItem('micyou_onboarding_completed', 'true');
   emit('complete');
-}
-
-async function installVBCable() {
-  installing.value = true;
-  installError.value = '';
-  installProgress.value = '';
-
-  try {
-    const result = await command('install_vbcable');
-
-    if (result.success) {
-      installSuccess.value = true;
-      vbcableInstalled.value = true;
-    } else {
-      installError.value = result.error_type || 'unknown';
-    }
-  } catch (e: any) {
-    installError.value = 'unknown';
-    installProgress.value = '';
-  } finally {
-    installing.value = false;
-  }
 }
 
 async function openManualDownload() {
@@ -158,30 +125,9 @@ async function openTextGuide() {
         <template v-else>
           <p class="text-sm text-on-surface-variant">{{ t('vbcableDetect.message') }}</p>
 
-          <div v-if="installError" class="bg-error/10 rounded-xl p-4">
-            <p class="text-sm text-error" v-if="installError === 'uac_denied'">{{ t('vbcableInstall.adminRequired') }}</p>
-            <p class="text-sm text-error" v-else-if="installError === 'timeout'">{{ t('vbcableInstall.timeout') }}</p>
-            <p class="text-sm text-error" v-else>{{ t('vbcableInstall.failed') }}</p>
-          </div>
+          <VBCableManualSetup @download="openManualDownload" @recheck="checkVBCableStatus" />
 
           <div class="space-y-2">
-            <button
-              @click="installVBCable"
-              :disabled="installing"
-              class="w-full py-3 bg-primary hover:bg-primary/90 disabled:opacity-50 rounded-xl text-sm font-bold text-on-primary flex items-center justify-center gap-2 transition-colors"
-            >
-              <Loader2 v-if="installing" class="w-4 h-4 animate-spin" />
-              <Download v-else class="w-4 h-4" />
-              {{ installing ? installProgress || t('vbcableInstall.installing') : t('vbcableDetect.autoInstall') }}
-            </button>
-
-            <button
-              @click="openManualDownload"
-              class="w-full py-3 bg-surface-variant hover:bg-surface-variant/80 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors"
-            >
-              <Download class="w-4 h-4" /> {{ t('vbcableDetect.manualDownload') }}
-            </button>
-
             <button
               @click="skip"
               class="w-full py-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
@@ -192,23 +138,8 @@ async function openTextGuide() {
         </template>
       </div>
 
-      <!-- Step 3: Installation Progress (Windows only) -->
+      <!-- Step 3: Complete -->
       <div v-else-if="step === 3" class="p-6 space-y-5">
-        <h2 class="text-xl font-bold text-on-surface">{{ t('vbcableInstall.installing') }}</h2>
-
-        <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <Loader2 class="w-5 h-5 text-primary animate-spin" />
-            <p class="text-sm text-on-surface-variant">{{ installProgress || t('vbcableInstall.waitingDevice') }}</p>
-          </div>
-          <div class="w-full bg-surface-variant rounded-full h-2 overflow-hidden">
-            <div class="h-full bg-primary rounded-full animate-pulse" style="width: 100%"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 4: Complete -->
-      <div v-else-if="step === 4" class="p-6 space-y-5">
         <div class="flex items-center gap-3">
           <CheckCircle2 class="w-8 h-8 text-green-400" />
           <h2 class="text-xl font-bold text-on-surface">{{ t('onboarding.complete') }}</h2>
@@ -233,14 +164,14 @@ async function openTextGuide() {
 
         <div class="flex items-center gap-2">
           <button
-            v-if="step === 2 && vbcableInstalled"
+            v-if="isWindows && step === 1"
             @click="nextStep"
             class="px-6 py-2 bg-primary hover:bg-primary/90 rounded-xl text-sm font-bold text-on-primary flex items-center gap-1 transition-colors"
           >
             {{ t('onboarding.next') }} <ArrowRight class="w-4 h-4" />
           </button>
           <button
-            v-if="step === 4"
+            v-if="step === 3"
             @click="complete"
             class="px-6 py-2 bg-primary hover:bg-primary/90 rounded-xl text-sm font-bold text-on-primary transition-colors"
           >

@@ -210,7 +210,7 @@ pub fn cmd_mics() {
         println!("VB-CABLE status:");
         println!("  installed: {installed}");
         if !installed {
-            println!("  run `micyou-cli mics install` to install VB-CABLE");
+            println!("  install VB-CABLE manually from https://vb-audio.com/Cable/ and restart MicYou");
         }
     }
     #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
