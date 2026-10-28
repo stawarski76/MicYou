@@ -27,6 +27,22 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import android.content.pm.PackageManager
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.compose.runtime.CompositionLocalProvider
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
+import com.lanrhyme.micyou.network.PairingScanOutcome
+import com.lanrhyme.micyou.viewmodel.PairingScanViewModel
+import com.lanrhyme.micyou.ui.LocalPairingScanner
+import com.lanrhyme.micyou.ui.PairingCaptureActivity
+import com.lanrhyme.micyou.ui.messageResource
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +69,41 @@ import com.lanrhyme.micyou.viewmodel.StreamState
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+
+    private val pairingScanModel by lazy { ViewModelProvider(this)[PairingScanViewModel::class.java] }
+    // Register on every Activity creation, independently of lazy/conditional UI.
+    private val pairingResult = registerForActivityResult(ScanContract()) { result ->
+        pairingScanModel.accept(result.contents, result.formatName, !AudioEngine.isStreaming())
+    }
+    private val pairingCameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) launchPairingScanner()
+        else pairingScanModel.report(PairingScanOutcome.CAMERA_DENIED)
+    }
+
+    private fun requestPairingScan() {
+        if (!pairingScanModel.begin()) return
+        if (Build.VERSION.SDK_INT < 23 || AudioEngine.isStreaming()) {
+            pairingScanModel.report(PairingScanOutcome.UNAVAILABLE); return
+        }
+        try {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                launchPairingScanner()
+            } else pairingCameraPermission.launch(android.Manifest.permission.CAMERA)
+        } catch (_: Exception) { pairingScanModel.report(PairingScanOutcome.FAILED) }
+    }
+
+    private fun launchPairingScanner() {
+        if (AudioEngine.isStreaming()) { pairingScanModel.report(PairingScanOutcome.UNAVAILABLE); return }
+        try {
+            pairingResult.launch(ScanOptions().apply {
+                setCaptureActivity(PairingCaptureActivity::class.java)
+                setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                setPrompt(getString(R.string.securePairingScanPrompt))
+                setBeepEnabled(false); setBarcodeImageEnabled(false)
+                setOrientationLocked(false); setTimeout(60000)
+            })
+        } catch (_: Exception) { pairingScanModel.report(PairingScanOutcome.FAILED) }
+    }
 
     private var permissionDialogState = mutableStateOf(false)
     private var currentPermissionsState = mutableStateOf<List<PermissionState>>(emptyList())
@@ -143,6 +194,16 @@ class MainActivity : ComponentActivity() {
 
         Logger.init(this)
         Logger.i("MainActivity", "App started")
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                pairingScanModel.notifications.collect { outcome ->
+                    outcome.messageResource()?.let { message ->
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
 
         BackgroundImagePicker.register(this)
         val shouldQuickStart = intent?.action == ACTION_QUICK_START
@@ -251,6 +312,7 @@ class MainActivity : ComponentActivity() {
             val currentPermissions by currentPermissionsState
             val isPermissionDialogDismissed by permissionDialogDismissed
 
+            CompositionLocalProvider(LocalPairingScanner provides { requestPairingScan() }) {
             App(
                 viewModel = appViewModel,
                 activity = this@MainActivity,
@@ -264,6 +326,7 @@ class MainActivity : ComponentActivity() {
                 },
                 isPermissionDialogDismissed = isPermissionDialogDismissed
             )
+            }
         }
     }
 

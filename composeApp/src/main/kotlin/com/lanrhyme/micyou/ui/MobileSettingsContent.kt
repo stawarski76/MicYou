@@ -177,7 +177,7 @@ fun MobileSettingsPage(
         ) {
             item { Spacer(modifier = Modifier.height(32.dp)) }
 
-            item {
+            item(key = "secure-pairing") {
                 PairingSetupCard(enabled = state.streamState != com.lanrhyme.micyou.viewmodel.StreamState.Streaming &&
                     state.streamState != com.lanrhyme.micyou.viewmodel.StreamState.Connecting)
             }

@@ -393,4 +393,8 @@
     <string name="securePairingScanPrompt">Scan the pairing QR code displayed in the desktop app settings</string>
     <string name="securePairingInvalidQr">This QR code is not a valid MicYou pairing code. Your saved pairing has not changed.</string>
     <string name="securePairingCameraDenied">Camera access is required to scan the pairing QR code. You can also paste the code below.</string>
+    <string name="securePairingScanSaved">Pairing saved. Return to the main screen, select your computer and connect. The microphone has not started yet.</string>
+    <string name="securePairingScanCancelled">Scanning ended without a pairing code. Your saved pairing has not changed.</string>
+    <string name="securePairingScanUnavailable">Stop the audio connection before importing a pairing code.</string>
+    <string name="securePairingSaving">Saving pairing securely…</string>
 </resources>

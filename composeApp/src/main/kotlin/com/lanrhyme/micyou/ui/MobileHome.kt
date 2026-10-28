@@ -151,7 +151,7 @@ fun MobileHome(viewModel: MainViewModel) {
     val isDarkTheme = isDarkThemeActive(state.themeMode)
     val forcePureBlackBackground = state.oledPureBlack && isDarkTheme
     
-    var showSettings by remember { mutableStateOf(false) }
+    var showSettings by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     var contentVisible by remember { mutableStateOf(false) }
 
     // Handle Android system back gesture to close settings page (no-op on desktop)
