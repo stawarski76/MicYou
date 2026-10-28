@@ -130,7 +130,7 @@ cargo run -p micyou-tui
   - Technical error text logged or sent over the wire stays English and unlocalized
 - **Rust**: Tauri commands are `snake_case`; long-lived state is `Arc`-wrapped inside `ServerState`; lifecycle is serialized by `ServerLifecycleGate` + `CancellationToken`; serde config uses `camelCase`; recover poisoned locks with `unwrap_or_else(|p| p.into_inner())` instead of propagating errors; keep tests inline in `#[cfg(test)]` modules
 - **Defensive code**: validate at trust boundaries (network frames, plugin output, zip archives, plugin ids, config files) and keep the inside lean; prefer bounded limits and quarantine over panics
-- **Communication**: use Chinese for code reviews, issue and PR comments and any other user-facing communication; commit messages are English `<type>: <description>`
+- **Communication**: use Polish for code reviews, issue and PR comments and any other user-facing communication in this fork; commit messages are English `<type>: <description>`
 
 ## Testing and QA
 

@@ -214,39 +214,60 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_is_valid_origin_v4_behavior_unchanged() {
-        assert!(is_valid_origin(None));
-        assert!(is_valid_origin(Some("http://localhost:8443")));
-        assert!(is_valid_origin(Some("http://127.0.0.1:8443")));
-        assert!(!is_valid_origin(Some("https://evil.example.com")));
-        assert!(!is_valid_origin(Some("https://localhost.evil.example.com")));
-        assert!(!is_valid_origin(Some("https://127.0.0.1.evil.example.com")));
-        assert!(!is_valid_origin(Some("null")));
-        for ip in get_lan_ips() {
-            assert!(is_valid_origin(Some(&format!("https://{}:8443", ip))));
-        }
+    fn origin_headers(origin: Option<&str>, host: &str) -> HeaderMap {
+        let mut headers = HeaderMap::new();
+        headers.insert("host", host.parse().unwrap());
+        if let Some(origin) = origin { headers.insert("origin", origin.parse().unwrap()); }
+        headers
     }
 
     #[test]
-    fn test_is_valid_origin_accepts_ipv6() {
-        // Browsers bracket IPv6 hosts in the Origin header.
-        assert!(is_valid_origin(Some("https://[::1]:8443")));
-        for ip in get_lan_ipv6s() {
-            assert!(
-                is_valid_origin(Some(&format!("https://[{}]:8443", ip))),
-                "origin with [{}] rejected",
-                ip
-            );
-        }
+    fn websocket_origin_requires_https_and_the_same_host_and_port() {
+        for (origin, host) in [
+            ("https://localhost:8443", "localhost:8443"),
+            ("https://127.0.0.1:8443", "127.0.0.1:8443"),
+            ("https://[::1]:8443", "[::1]:8443"),
+            ("https://LOCALHOST", "localhost:443"),
+        ] { assert!(is_valid_origin(&origin_headers(Some(origin), host)), "{origin}"); }
+        for origin in [
+            "http://localhost:8443", "https://localhost:8444", "https://127.0.0.1:8443",
+            "https://localhost.evil.example:8443", "https://evil.example:8443", "null",
+            "https://user@localhost:8443", "https://localhost:8443/", "https://localhost:8443/a",
+            "https://localhost:8443?x=1", "https://localhost:8443#fragment",
+            "https://localhost:8443:9999", "https://localhost:wrong",
+        ] { assert!(!is_valid_origin(&origin_headers(Some(origin), "localhost:8443")), "{origin}"); }
     }
 
     #[test]
-    fn origin_host_strips_scheme_port_and_brackets() {
-        assert_eq!(origin_host("https://192.168.1.2:8443"), Some("192.168.1.2"));
-        assert_eq!(origin_host("https://[fd00::1]:8443"), Some("fd00::1"));
-        assert_eq!(origin_host("https://[fd00::1]x"), None);
-        assert_eq!(origin_host("localhost"), None);
+    fn websocket_origin_rejects_missing_duplicate_and_nonlocal_headers() {
+        assert!(!is_valid_origin(&origin_headers(None, "localhost:8443")));
+        let mut headers = origin_headers(Some("https://localhost:8443"), "localhost:8443");
+        headers.append("origin", "https://localhost:8443".parse().unwrap());
+        assert!(!is_valid_origin(&headers));
+        let mut headers = origin_headers(Some("https://localhost:8443"), "localhost:8443");
+        headers.append("host", "localhost:8443".parse().unwrap());
+        assert!(!is_valid_origin(&headers));
+        headers.remove("host");
+        assert!(!is_valid_origin(&headers));
+        assert!(!is_valid_origin(&origin_headers(Some("https://evil.example:8443"), "evil.example:8443")));
+        for authority in ["localhost:", "localhost:wrong", "localhost:65536"] {
+            assert!(!is_valid_origin(&origin_headers(Some("https://localhost"), authority)));
+            assert!(!is_valid_origin(&origin_headers(Some(&format!("https://{authority}")), authority)));
+        }
+        let mut headers = origin_headers(None, "localhost:8443");
+        headers.insert("origin", axum::http::HeaderValue::from_bytes(&[0xff]).unwrap());
+        assert!(!is_valid_origin(&headers));
+    }
+
+    #[test]
+    fn websocket_origin_accepts_this_servers_ipv4_and_ipv6_addresses() {
+        for ip in get_lan_ips().into_iter().chain(get_lan_ipv6s()) {
+            let authority = match ip {
+                IpAddr::V4(_) => format!("{ip}:8443"),
+                IpAddr::V6(_) => format!("[{ip}]:8443"),
+            };
+            assert!(is_valid_origin(&origin_headers(Some(&format!("https://{authority}")), &authority)));
+        }
     }
 
     #[test]
@@ -290,41 +311,124 @@ mod tests {
     }
 
     #[test]
-    fn new_web_sender_closes_replaced_sender() {
+    fn busy_web_sender_is_rejected_without_cancelling_the_active_sender() {
         let senders = ActiveWebSender::default();
         let shutdown = CancellationToken::new();
-        let (first_generation, first_cancel, first_replaced) = senders.activate(&shutdown);
-        let (second_generation, second_cancel, second_replaced) = senders.activate(&shutdown);
-
-        assert!(!first_replaced);
-        assert!(second_replaced);
-        assert!(first_cancel.is_cancelled());
-        assert!(!second_cancel.is_cancelled());
-        assert!(!senders.is_current(first_generation));
-        assert!(senders.is_current(second_generation));
+        let (first, token) = senders.activate(&shutdown).unwrap();
+        assert!(senders.activate(&shutdown).is_none());
+        assert!(!token.is_cancelled());
+        assert!(senders.is_current(first));
+        assert!(!senders.deactivate(first + 1));
+        assert!(senders.deactivate(first));
+        assert!(!senders.is_current(first));
+        let (second, _) = senders.activate(&shutdown).unwrap();
+        assert!(second > first);
+        assert!(!senders.deactivate(first));
+        assert!(senders.is_current(second));
     }
 
     #[test]
-    fn replacement_disconnect_does_not_restore_old_sender() {
-        let senders = ActiveWebSender::default();
+    fn concurrent_web_candidates_cannot_replace_each_other() {
+        let senders = Arc::new(ActiveWebSender::default());
         let shutdown = CancellationToken::new();
-        let (first_generation, first_cancel, _) = senders.activate(&shutdown);
-        let (second_generation, _, _) = senders.activate(&shutdown);
-
-        assert!(senders.deactivate(second_generation));
-        assert!(!senders.is_current(first_generation));
-        assert!(first_cancel.is_cancelled());
-        assert!(!senders.deactivate(first_generation));
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        let tasks: Vec<_> = (0..8).map(|_| {
+            let senders = senders.clone(); let shutdown = shutdown.clone(); let barrier = barrier.clone();
+            std::thread::spawn(move || { barrier.wait(); senders.activate(&shutdown) })
+        }).collect();
+        let winners: Vec<_> = tasks.into_iter().filter_map(|t| t.join().unwrap()).collect();
+        assert_eq!(winners.len(), 1);
+        assert!(!winners[0].1.is_cancelled());
+        assert!(senders.is_current(winners[0].0));
     }
 
     #[test]
-    fn server_shutdown_closes_the_active_sender() {
+    fn server_shutdown_closes_the_active_sender_and_rejects_new_senders() {
         let senders = ActiveWebSender::default();
         let shutdown = CancellationToken::new();
-        let (_, cancel, _) = senders.activate(&shutdown);
+        let (generation, cancel) = senders.activate(&shutdown).unwrap();
         shutdown.cancel();
         assert!(cancel.is_cancelled());
+        assert!(!senders.is_current(generation));
+        assert!(senders.deactivate(generation));
+        assert!(senders.activate(&shutdown).is_none());
     }
+
+    #[tokio::test]
+    async fn https_upgrade_rejects_a_second_sender_and_preserves_the_first() {
+        use tokio::io::{AsyncReadExt, AsyncWriteExt};
+        let cert = generate_self_signed_cert_pem(&["127.0.0.1".parse().unwrap()]).unwrap();
+        let chain = CertificateDer::pem_slice_iter(cert.cert_pem.as_bytes()).collect::<Result<Vec<_>, _>>().unwrap();
+        let key = PrivateKeyDer::from_pem_slice(cert.key_pem.as_bytes()).unwrap();
+        let mut roots = rustls::RootCertStore::empty();
+        roots.add(chain[0].clone()).unwrap();
+        let client = rustls::ClientConfig::builder().with_root_certificates(roots).with_no_client_auth();
+        let connector = tokio_rustls::TlsConnector::from(Arc::new(client));
+        let server = ServerConfig::builder().with_no_client_auth().with_single_cert(chain, key).unwrap();
+        let tcp = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = tcp.local_addr().unwrap();
+        let (completed, completed_rx) = tokio::sync::mpsc::channel(MAX_TLS_HANDSHAKES);
+        let listener = TlsListener {
+            tcp, acceptor: TlsAcceptor::from(Arc::new(server)),
+            handshake_slots: Arc::new(Semaphore::new(MAX_TLS_HANDSHAKES)), completed, completed_rx,
+        };
+        let shutdown = CancellationToken::new();
+        let count = Arc::new(AtomicUsize::new(0));
+        let (audio_tx, _audio_rx) = tokio::sync::mpsc::channel(16);
+        let state = WebServerState {
+            events: Arc::new(crate::transport::tcp::admission_tests::Events::default()),
+            audio_tx, client_count: count.clone(), active_sender: Arc::new(ActiveWebSender::default()),
+            websocket_slots: Arc::new(Semaphore::new(MAX_WEBSOCKET_CONNECTIONS)), shutdown: shutdown.clone(),
+        };
+        let app = Router::new().route("/ws", get(handle_websocket)).with_state(state);
+        let stop = shutdown.clone();
+        let task = tokio::spawn(async move {
+            axum::serve(listener, app).with_graceful_shutdown(stop.cancelled_owned()).await.unwrap();
+        });
+
+        async fn upgrade(connector: &tokio_rustls::TlsConnector, addr: SocketAddr, origin: bool) -> (tokio_rustls::client::TlsStream<TcpStream>, String) {
+            let socket = TcpStream::connect(addr).await.unwrap();
+            let mut socket = connector.connect(rustls::pki_types::ServerName::try_from("localhost").unwrap(), socket).await.unwrap();
+            let origin = if origin { format!("Origin: https://localhost:{}\r\n", addr.port()) } else { String::new() };
+            let request = format!("GET /ws HTTP/1.1\r\nHost: localhost:{}\r\n{origin}Connection: Upgrade\r\nUpgrade: websocket\r\nSec-WebSocket-Version: 13\r\nSec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n\r\n", addr.port());
+            socket.write_all(request.as_bytes()).await.unwrap();
+            let mut response = Vec::new();
+            loop {
+                response.push(socket.read_u8().await.unwrap());
+                if response.ends_with(b"\r\n\r\n") { break; }
+                assert!(response.len() < 8192);
+            }
+            (socket, String::from_utf8(response).unwrap())
+        }
+        async fn ping(socket: &mut tokio_rustls::client::TlsStream<TcpStream>) {
+            // A masked one-byte WebSocket ping; the server must return its pong.
+            socket.write_all(&[0x89, 0x81, 1, 2, 3, 4, b'x' ^ 1]).await.unwrap();
+            let mut pong = [0; 3]; socket.read_exact(&mut pong).await.unwrap();
+            assert_eq!(pong, [0x8a, 1, b'x']);
+        }
+        tokio::time::timeout(std::time::Duration::from_secs(10), async {
+            let (mut first, response) = upgrade(&connector, addr, true).await;
+            assert!(response.starts_with("HTTP/1.1 101"), "{response}");
+            ping(&mut first).await;
+            assert_eq!(count.load(Ordering::SeqCst), 1);
+            let (_second, response) = upgrade(&connector, addr, true).await;
+            assert!(response.starts_with("HTTP/1.1 503"), "{response}");
+            let (_missing_origin, response) = upgrade(&connector, addr, false).await;
+            assert!(response.starts_with("HTTP/1.1 403"), "{response}");
+            ping(&mut first).await;
+            assert_eq!(count.load(Ordering::SeqCst), 1);
+            drop(first);
+            while count.load(Ordering::SeqCst) != 0 { tokio::task::yield_now().await; }
+            let (mut third, response) = upgrade(&connector, addr, true).await;
+            assert!(response.starts_with("HTTP/1.1 101"), "{response}");
+            ping(&mut third).await;
+            drop(third);
+            while count.load(Ordering::SeqCst) != 0 { tokio::task::yield_now().await; }
+        }).await.unwrap();
+        shutdown.cancel();
+        tokio::time::timeout(std::time::Duration::from_secs(3), task).await.unwrap().unwrap();
+    }
+
 }
 
 use crate::events::SharedEvents;
@@ -343,41 +447,43 @@ use tokio::sync::{OwnedSemaphorePermit, Semaphore};
 use tokio_rustls::{server::TlsStream, TlsAcceptor};
 
 const MAX_TLS_HANDSHAKES: usize = 32;
-const MAX_WEBSOCKET_CONNECTIONS: usize = 8;
+// Keep the upgrade permit through teardown, so a new sender cannot race the
+// previous handler's client-count and disconnect events.
+const MAX_WEBSOCKET_CONNECTIONS: usize = 1;
 const TLS_HANDSHAKE_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(5);
 
 const WEB_CLIENT_HTML: &str = include_str!("../../assets/web_client.html");
 const ALPINE_JS: &str = include_str!("../../assets/alpine.min.js");
 
-/// Host part of an `Origin` header (`scheme://host[:port]`), with IPv6
-/// brackets removed.
-fn origin_host(origin: &str) -> Option<&str> {
-    let (_, authority) = origin.split_once("://")?;
-    if let Some(rest) = authority.strip_prefix('[') {
-        let (host, tail) = rest.split_once(']')?;
-        return (tail.is_empty() || tail.starts_with(':')).then_some(host);
+/// Origin is browser cross-site protection, not client authentication: native
+/// clients can forge it. Require the actual HTTPS page origin including its port.
+fn is_valid_origin(headers: &HeaderMap) -> bool {
+    if headers.get_all("origin").iter().count() != 1 || headers.get_all("host").iter().count() != 1 {
+        return false;
     }
-    let host = authority.split(':').next()?;
-    (!host.is_empty()).then_some(host)
+    let Some(origin) = headers.get("origin").and_then(|h| h.to_str().ok()) else { return false; };
+    let Some(host) = headers.get("host").and_then(|h| h.to_str().ok()) else { return false; };
+    let Ok(uri) = origin.parse::<axum::http::Uri>() else { return false; };
+    let Some(authority) = uri.authority() else { return false; };
+    let Ok(host) = host.parse::<axum::http::uri::Authority>() else { return false; };
+    if uri.scheme_str() != Some("https")
+        || origin != format!("https://{authority}")
+        || authority.as_str().contains('@') || host.as_str().contains('@')
+        || !authority.host().eq_ignore_ascii_case(host.host())
+        || authority_port(&authority).is_none()
+        || authority_port(&authority) != authority_port(&host)
+    { return false; }
+    let hostname = authority.host().trim_start_matches('[').trim_end_matches(']');
+    if hostname.eq_ignore_ascii_case("localhost") { return true; }
+    let Ok(ip) = hostname.parse::<IpAddr>() else { return false; };
+    ip.is_loopback() || get_lan_ips().contains(&ip) || get_lan_ipv6s().contains(&ip)
 }
 
-/// Only pages served by this machine may open the audio socket; any other
-/// site could otherwise inject audio into the virtual microphone from the
-/// user's browser.
-fn is_valid_origin(origin: Option<&str>) -> bool {
-    let Some(origin) = origin else {
-        return true;
-    };
-    let Some(host) = origin_host(origin) else {
-        return false;
-    };
-    if host.eq_ignore_ascii_case("localhost") {
-        return true;
-    }
-    let Ok(ip) = host.parse::<IpAddr>() else {
-        return false;
-    };
-    ip.is_loopback() || get_lan_ips().contains(&ip) || get_lan_ipv6s().contains(&ip)
+// `port_u16() == None` alone does not distinguish an omitted port from an
+// invalid explicit port. Never turn malformed input into the HTTPS default.
+fn authority_port(authority: &axum::http::uri::Authority) -> Option<u16> {
+    let suffix = authority.as_str().strip_prefix(authority.host())?;
+    if suffix.is_empty() { Some(443) } else { suffix.strip_prefix(':')?.parse().ok() }
 }
 
 async fn handle_websocket(
@@ -385,8 +491,7 @@ async fn handle_websocket(
     headers: HeaderMap,
     axum::extract::State(state): axum::extract::State<WebServerState>,
 ) -> impl IntoResponse {
-    let origin = headers.get("origin").and_then(|v| v.to_str().ok());
-    if !is_valid_origin(origin) {
+    if !is_valid_origin(&headers) {
         return (StatusCode::FORBIDDEN, "Invalid origin").into_response();
     }
     let permit = match state.websocket_slots.clone().try_acquire_owned() {
@@ -407,16 +512,15 @@ async fn handle_ws_socket(
     state: WebServerState,
     _permit: OwnedSemaphorePermit,
 ) {
-    let (generation, cancel, replaced) = state.active_sender.activate(&state.shutdown);
-    let count = if replaced {
-        state.client_count.load(Ordering::SeqCst)
-    } else {
-        state.client_count.fetch_add(1, Ordering::SeqCst) + 1
+    let Some((generation, cancel)) = state.active_sender.activate(&state.shutdown) else {
+        let _ = socket.send(Message::Close(None)).await;
+        return;
     };
+    let count = state.client_count.fetch_add(1, Ordering::SeqCst) + 1;
     state.events.web_client_count(count as u32);
     log::info!("Web client connected (total: {})", count);
 
-    if count == 1 && !replaced {
+    if count == 1 {
         state
             .events
             .device_connected(crate::transport::tcp::DeviceInfo {
@@ -477,7 +581,7 @@ async fn handle_ws_socket(
             state.events.device_disconnected();
         }
     } else {
-        log::info!("Replaced Web client closed");
+        log::info!("Inactive Web client closed");
     }
 }
 
@@ -505,21 +609,18 @@ struct ActiveWebSender {
 impl ActiveWebSender {
     /// `shutdown` is the server's token: stopping the server must also end
     /// upgraded sockets, which axum's graceful shutdown no longer tracks.
-    fn activate(&self, shutdown: &CancellationToken) -> (u64, CancellationToken, bool) {
-        let cancel = shutdown.child_token();
+    fn activate(&self, shutdown: &CancellationToken) -> Option<(u64, CancellationToken)> {
         let mut active = self.cancel.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+        if shutdown.is_cancelled() || active.is_some() { return None; }
+        let cancel = shutdown.child_token();
         let generation = self.generation.fetch_add(1, Ordering::SeqCst) + 1;
-        let replaced = if let Some((_, previous)) = active.replace((generation, cancel.clone())) {
-            previous.cancel();
-            true
-        } else {
-            false
-        };
-        (generation, cancel, replaced)
+        *active = Some((generation, cancel.clone()));
+        Some((generation, cancel))
     }
 
     fn is_current(&self, generation: u64) -> bool {
-        self.generation.load(Ordering::SeqCst) == generation
+        let active = self.cancel.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+        active.as_ref().is_some_and(|(current, cancel)| *current == generation && !cancel.is_cancelled())
     }
 
     fn deactivate(&self, generation: u64) -> bool {

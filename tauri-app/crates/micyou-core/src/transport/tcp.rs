@@ -531,9 +531,15 @@ async fn handle_client(
     let (tx, mut rx) = tokio::sync::mpsc::channel::<MessageWrapper>(100);
     let takeover_token = CancellationToken::new();
 
-    // Serialize reservation and publication so acknowledged candidates cannot reorder
-    // SessionStarting relative to the active connection they publish.
+    // Admission and teardown share this lock. An unauthenticated candidate must
+    // never evict the active phone or enqueue a new audio epoch while it is busy.
     let _takeover_guard = takeover_lock.lock().await;
+    if cancel_token.is_cancelled() {
+        return Ok(());
+    }
+    if active_connection.lock().await.is_some() {
+        return Err(IoError::new(ErrorKind::AlreadyExists, "microphone session is already active").into());
+    }
     let session_start_permit = tokio::select! {
         _ = cancel_token.cancelled() => return Ok(()),
         result = timeout(HANDSHAKE_TIMEOUT, audio_tx.clone().reserve_owned()) => {
@@ -542,19 +548,18 @@ async fn handle_client(
                 .map_err(|_| IoError::new(ErrorKind::BrokenPipe, "audio pipeline stopped"))?
         }
     };
-    let old = {
+    {
         let mut active = active_connection.lock().await;
-        let old = active.replace(ActiveConnection {
+        if cancel_token.is_cancelled() {
+            return Ok(());
+        }
+        *active = Some(ActiveConnection {
             sender: tx.clone(),
             raw_socket: raw,
             connection_id,
             takeover_token: takeover_token.clone(),
             platform,
         });
-        if let Some(old) = old.as_ref() {
-            old.takeover_token.cancel();
-            force_close_socket(old.raw_socket);
-        }
         let epoch = {
             let mut active_audio = active_audio_session
                 .write()
@@ -586,9 +591,7 @@ async fn handle_client(
         // Point the plugin sync adapter at this client's control channel so
         // plugin messages can flow to the phone (cleared when it exits).
         plugins.sync.set_sender(Some(tx.clone()));
-        old
-    };
-    drop(old);
+    }
     drop(_takeover_guard);
 
     log::info!("Handshake successful with {} ({:?})", addr, platform);
@@ -757,6 +760,9 @@ async fn handle_client(
     };
     task_guard.abort_and_wait().await;
 
+    // Do not admit a replacement between clearing the slot and clearing audio:
+    // otherwise this departing handler could erase the next phone's session.
+    let _session_guard = takeover_lock.lock().await;
     if clear_if_active(&active_connection, connection_id).await {
         *active_audio_session
             .write()
@@ -1032,5 +1038,154 @@ mod tests {
             ActiveAudioSession::Inactive
         ));
         assert!(receiver.recv().await.is_none());
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod admission_tests {
+    use super::*;
+    use crate::events::{AecStatus, DownloadProgress, ServerEvents, SpectrumPayload};
+    use crate::host::{HostIntegration, HotkeyCallback};
+    use crate::server::ServerState;
+    use crate::stats::AudioMetrics;
+    use std::sync::atomic::AtomicUsize;
+
+    #[derive(Default)]
+    pub(crate) struct Events { connects: AtomicUsize, disconnects: AtomicUsize }
+    impl ServerEvents for Events {
+        fn device_connected(&self, _: DeviceInfo) { self.connects.fetch_add(1, Ordering::SeqCst); }
+        fn device_disconnected(&self) { self.disconnects.fetch_add(1, Ordering::SeqCst); }
+        fn audio_metrics(&self, _: AudioMetrics) {}
+        fn udp_audio_warning(&self) {}
+        fn mute_state_changed(&self, _: bool) {}
+        fn audio_level(&self, _: u32) {}
+        fn audio_spectrum(&self, _: SpectrumPayload) {}
+        fn server_stopped(&self) {}
+        fn web_client_count(&self, _: u32) {}
+        fn install_progress(&self, _: String) { panic!("unexpected installation") }
+        fn aec_status_changed(&self, _: AecStatus) {}
+        fn monitoring_state_changed(&self, _: bool) {}
+        fn plugin_download_progress(&self, _: DownloadProgress) { panic!("unexpected download") }
+    }
+    struct Host;
+    impl HostIntegration for Host {
+        fn open_url(&self, _: &str) -> Result<(), String> { panic!("unexpected URL") }
+        fn notify(&self, _: &str, _: &str) -> Result<(), String> { panic!("unexpected notification") }
+        fn register_hotkey(&self, _: &str, _: HotkeyCallback) -> Result<(), String> { panic!("unexpected hotkey") }
+        fn open_plugin_panel(&self, _: &str, _: &str, _: &str) -> Result<(), String> { panic!("unexpected panel") }
+    }
+
+    type ClientTask = JoinHandle<Result<(), Box<dyn Error + Send + Sync>>>;
+
+    async fn candidate(state: &ServerState, audio: tokio::sync::mpsc::Sender<AudioStreamEvent>, cancel: CancellationToken) -> (TcpStream, ClientTask) {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let client = TcpStream::connect(listener.local_addr().unwrap()).await.unwrap();
+        let (server, peer) = listener.accept().await.unwrap();
+        let events = state.events.clone(); let stats = state.network_stats.clone();
+        let active = state.active_connection.clone(); let gate = state.takeover_lock.clone();
+        let session = state.active_audio_session.clone(); let plugins = state.plugins.clone();
+        let task = tokio::spawn(handle_client(server, peer, events, audio, stats, ConnectionMode::Wifi, active, gate, session, plugins, cancel));
+        (client, task)
+    }
+
+    async fn send_frame(socket: &mut TcpStream, message: MessageWrapper) {
+        let payload = message.encode_to_vec();
+        socket.write_all(&PACKET_MAGIC.to_be_bytes()).await.unwrap();
+        socket.write_all(&(payload.len() as i32).to_be_bytes()).await.unwrap();
+        socket.write_all(&payload).await.unwrap();
+    }
+
+    async fn connect(socket: &mut TcpStream, session_id: i64) {
+        socket.write_all(HANDSHAKE_CLIENT_STR).await.unwrap();
+        let mut response = vec![0; HANDSHAKE_SERVER_STR.len()];
+        timeout(Duration::from_secs(3), socket.read_exact(&mut response)).await.unwrap().unwrap();
+        assert_eq!(response, HANDSHAKE_SERVER_STR);
+        send_frame(socket, MessageWrapper {
+            connect: Some(micyou_protocol::micyou::ConnectMessage { session_id, platform: "android".into() }),
+            ..Default::default()
+        }).await;
+    }
+
+    async fn next_session(audio: &mut tokio::sync::mpsc::Receiver<AudioStreamEvent>, expected: i64) {
+        assert!(matches!(timeout(Duration::from_secs(3), audio.recv()).await.unwrap(),
+            Some(AudioStreamEvent::SessionStarting { expected: ExpectedAudioSession::Bound(id), .. }) if id == expected));
+    }
+
+    #[tokio::test]
+    async fn a_second_tcp_phone_cannot_replace_the_active_session() {
+        let events = Arc::new(Events::default());
+        let state = ServerState::new(events.clone(), Arc::new(Host), None);
+        let (audio, mut packets) = tokio::sync::mpsc::channel(16);
+        let cancel = CancellationToken::new();
+        let (mut first, first_task) = candidate(&state, audio.clone(), cancel.clone()).await;
+        connect(&mut first, 111).await;
+        next_session(&mut packets, 111).await;
+        let (first_id, first_token) = {
+            let active = state.active_connection.lock().await;
+            let active = active.as_ref().unwrap();
+            (active.connection_id, active.takeover_token.clone())
+        };
+        let epoch_before = *state.active_audio_session.read().unwrap();
+        let (mut second, second_task) = candidate(&state, audio.clone(), cancel.clone()).await;
+        connect(&mut second, 222).await;
+        let rejected = timeout(Duration::from_secs(3), second_task).await.unwrap().unwrap().unwrap_err();
+        assert!(rejected.to_string().contains("already active"));
+        assert!(!first_token.is_cancelled());
+        assert_eq!(state.active_connection.lock().await.as_ref().unwrap().connection_id, first_id);
+        assert_eq!(*state.active_audio_session.read().unwrap(), epoch_before);
+        assert!(packets.try_recv().is_err());
+        assert_eq!(events.connects.load(Ordering::SeqCst), 1);
+        assert_eq!(events.disconnects.load(Ordering::SeqCst), 0);
+
+        send_frame(&mut first, MessageWrapper {
+            ping: Some(micyou_protocol::micyou::PingMessage { timestamp: 12345 }),
+            ..Default::default()
+        }).await;
+        timeout(Duration::from_secs(3), async {
+            loop {
+                let mut header = [0; FRAME_HEADER_LEN];
+                first.read_exact(&mut header).await.unwrap();
+                let mut payload = vec![0; parse_frame_header(&header).unwrap()];
+                first.read_exact(&mut payload).await.unwrap();
+                if let Some(pong) = MessageWrapper::decode(payload.as_slice()).unwrap().pong {
+                    assert_eq!(pong.timestamp, 12345); break;
+                }
+            }
+        }).await.unwrap();
+
+        drop(first);
+        let _ = timeout(Duration::from_secs(3), first_task).await.unwrap().unwrap();
+        assert!(state.active_connection.lock().await.is_none());
+        assert!(matches!(*state.active_audio_session.read().unwrap(), ActiveAudioSession::Inactive));
+        let (mut third, third_task) = candidate(&state, audio, cancel.clone()).await;
+        connect(&mut third, 333).await;
+        next_session(&mut packets, 333).await;
+        cancel.cancel();
+        timeout(Duration::from_secs(3), third_task).await.unwrap().unwrap().unwrap();
+        assert!(state.active_connection.lock().await.is_none());
+    }
+
+    #[tokio::test]
+    async fn simultaneous_tcp_candidates_have_only_one_winner() {
+        let events = Arc::new(Events::default());
+        let state = ServerState::new(events.clone(), Arc::new(Host), None);
+        let (audio, mut packets) = tokio::sync::mpsc::channel(16);
+        let cancel = CancellationToken::new();
+        let (mut first, first_task) = candidate(&state, audio.clone(), cancel.clone()).await;
+        let (mut second, second_task) = candidate(&state, audio, cancel.clone()).await;
+        tokio::join!(connect(&mut first, 111), connect(&mut second, 222));
+        let admitted = match timeout(Duration::from_secs(3), packets.recv()).await.unwrap().unwrap() {
+            AudioStreamEvent::SessionStarting { expected: ExpectedAudioSession::Bound(id), .. } => id,
+            _ => panic!("expected exactly one session start"),
+        };
+        let (winner, loser) = if admitted == 111 { (first_task, second_task) } else {
+            assert_eq!(admitted, 222); (second_task, first_task)
+        };
+        let error = timeout(Duration::from_secs(3), loser).await.unwrap().unwrap().unwrap_err();
+        assert!(error.to_string().contains("already active"));
+        assert!(packets.try_recv().is_err());
+        assert_eq!(events.connects.load(Ordering::SeqCst), 1);
+        cancel.cancel();
+        timeout(Duration::from_secs(3), winner).await.unwrap().unwrap().unwrap();
     }
 }

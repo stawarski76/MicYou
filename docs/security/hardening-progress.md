@@ -46,3 +46,15 @@ The test correction on commit 24be90bc983f31f8d1d84433d79a228f8d086123 passed al
 The follow-up adds a real Vue component/event lifecycle regression: Windows welcome -> manual setup -> vendor URL -> recheck -> completion, with unexpected backend commands rejected by the test double. It failed because the welcome screen had no Next action. The Next control now makes the driver step reachable. CLI status text also directs users to the manual vendor download.
 
 Follow-up local gates: 7 Bun tests passed, 1 PowerShell behavior test skipped under the existing host policy, 0 failures; Vue type checking and git diff --check passed. The independent static review found no remaining concrete blockers in this patch. New driver backend tests and the Clippy correction still need the final-head CI run. No local Rust installation or firewall/driver changes were performed.
+
+## Ochrona aktywnej sesji (kolejny etap)
+
+Commit a2e421ede2283bb058eff2df60de4ab76965b616 przeszedł w CI wszystkie 8 testów frontendu, kontrolę typów Vue, testy backendu, Clippy oraz buildy Windows i Androida. Nie zastępuje to prób na rzeczywistym telefonie.
+
+Następna poprawka odrzuca nowego klienta TCP, gdy sesja jest zajęta, przed rezerwacją kolejki audio i zmianami stanu. Przyjęcie oraz zakończenie sesji używają wspólnej blokady, aby stary klient nie wyczyścił audio nowego. WebSocket ma jedno miejsce, utrzymywane przez cały cykl połączenia i sprzątania; nowy klient nie anuluje poprzedniego. Origin wymaga pojedynczych nagłówków, HTTPS, zgodnego lokalnego hosta i portu. Brak Origin i błędny port są odrzucane.
+
+Testy obejmują rzeczywiste sockety TCP loopback, odrzucenie drugiego telefonu, zachowanie tokenu i stanu audio pierwszego, ping/pong po próbie przejęcia, ponowne połączenie po rozłączeniu oraz równoległe próby przyjęcia. Testy WebSocket sprawdzają konkurencyjne rezerwacje nadawcy, generacje, zatrzymanie i walidację Origin. Nowe testy Rust wymagają wykonania w CI — lokalnego toolchainu nie instalowano. Plan: docs/superpowers/plans/2026-10-27-session-admission.md.
+
+To ograniczenie SEC-04/06, a nie ich pełne rozwiązanie. Pierwszy niesparowany klient nadal może zająć wolny serwer. Origin można podrobić w kliencie natywnym. Natywne TCP/UDP pozostają bez uwierzytelnienia i szyfrowania (SEC-05). Zmiana telefonu wymaga zwolnienia starej sesji lub restartu serwera; nagłe zerwanie sieci może wymagać odczekania dotychczasowego timeoutu 10 sekund. Nie dopuszczać do wydania jako bezpieczny produkt.
+
+Zapis AGENTS.md nakazujący komunikację po chińsku został zmieniony na polski zgodnie z poleceniem użytkownika. Nie zmienia to istniejących tłumaczeń aplikacji.
