@@ -1,0 +1,166 @@
+name: Zachowaj paczki testowe w Releases
+
+on:
+  push:
+    branches: ['codex/publish-test-release']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: preserve-qr-test-release
+  cancel-in-progress: false
+
+jobs:
+  preserve:
+    if: github.repository == 'stawarski76/MicYou' && github.ref == 'refs/heads/codex/publish-test-release'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: stawarski76/MicYou
+      SOURCE_SHA: 785f1d1b97e46a73bb3fe55ffb84116ad7ef263c
+      SOURCE_RUN: '40716539087'
+      RELEASE_TAG: v2.1.1-qr-test.1
+    steps:
+      - name: Pobierz i sprawdź oryginalne artefakty
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p downloads publish verify public-check
+          for artifact in 12828423576 12828852236; do
+            gh api "repos/$GH_REPO/actions/artifacts/$artifact" > "downloads/$artifact.json"
+            curl --fail --silent --show-error --location --retry 3 --retry-all-errors \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$GH_REPO/actions/artifacts/$artifact/zip" \
+              --output "downloads/$artifact.zip"
+          done
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, zipfile
+          expected = {
+              12828423576: ('22a7dc949e19e2bb3d52cca54c6f136f5c0f85638979cbd970bc2bc4f23ced7d', 'MicYou-Win-2.1.1-installer.exe', 'MicYou-Windows-2.1.1-qr-test.1.exe'),
+              12828852236: ('6695d6889d4a4393f6b4211f3b92021abf361ea4c601a61db85bec378b41482b', 'MicYou-Android-2.1.1.apk', 'MicYou-Android-2.1.1-qr-test.1.apk'),
+          }
+          info = [
+              'MicYou — zachowane paczki testowe bez przebudowy.',
+              'Commit źródłowy: ' + os.environ['SOURCE_SHA'],
+              'Źródłowy build: https://github.com/' + os.environ['GH_REPO'] + '/actions/runs/' + os.environ['SOURCE_RUN'],
+              'Sumy SHA-256 plików instalacyjnych: SHA256SUMS.txt',
+          ]
+          for artifact, (digest, original, destination) in expected.items():
+              meta = json.loads(pathlib.Path(f'downloads/{artifact}.json').read_text())
+              if meta['expired'] or meta['workflow_run']['head_sha'] != os.environ['SOURCE_SHA'] or str(meta['workflow_run']['id']) != os.environ['SOURCE_RUN']:
+                  raise SystemExit('Nieprawidłowe pochodzenie artefaktu')
+              archive = pathlib.Path(f'downloads/{artifact}.zip')
+              actual = hashlib.sha256(archive.read_bytes()).hexdigest()
+              if actual != digest or meta.get('digest') != 'sha256:' + digest:
+                  raise SystemExit('Niezgodna suma oryginalnego ZIP')
+              with zipfile.ZipFile(archive) as z:
+                  files = [f for f in z.infolist() if not f.is_dir()]
+                  if len(files) != 1 or files[0].filename != original or not 0 < files[0].file_size < 200 * 1024 * 1024:
+                      raise SystemExit('Nieoczekiwana zawartość ZIP')
+                  pathlib.Path('publish', destination).write_bytes(z.read(files[0]))
+              info.append(f'Artefakt {artifact}; SHA-256 ZIP: {digest}; plik: {destination}')
+          pathlib.Path('publish/BUILD-INFO.txt').write_text('\n'.join(info) + '\n', encoding='utf-8')
+          PY
+          (cd publish && sha256sum ./*.exe ./*.apk BUILD-INFO.txt > SHA256SUMS.txt)
+          cat > check-tag.py <<'PY'
+          import json, os, subprocess, sys
+          repo = os.environ['GH_REPO']
+          def get(path):
+              result = subprocess.run(['gh', 'api', path], capture_output=True, text=True)
+              if result.returncode:
+                  if 'HTTP 404' in result.stderr:
+                      return None
+                  raise SystemExit('Nie można sprawdzić tagu; publikacja zatrzymana')
+              return json.loads(result.stdout)
+          ref = get(f"repos/{repo}/git/ref/tags/{os.environ['RELEASE_TAG']}")
+          if ref is None:
+              if '--allow-missing' in sys.argv:
+                  sys.exit(0)
+              raise SystemExit('Brak publicznego tagu wydania')
+          obj = ref['object']
+          for _ in range(8):
+              if obj['type'] == 'commit':
+                  break
+              if obj['type'] != 'tag':
+                  raise SystemExit('Nieprawidłowy typ tagu')
+              tag = get(f"repos/{repo}/git/tags/{obj['sha']}")
+              if tag is None:
+                  raise SystemExit('Brak obiektu tagu')
+              obj = tag['object']
+          if obj['type'] != 'commit' or obj['sha'] != os.environ['SOURCE_SHA']:
+              raise SystemExit('Tag wskazuje inny commit; publikacja zatrzymana')
+          PY
+          python3 check-tag.py --allow-missing
+
+      - name: Przygotuj szkic wydania i prześlij pliki
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > notes.md <<'NOTES'
+          Wersja testowa naszego forka MicYou z szyfrowanym Wi-Fi, parowaniem QR oraz poprawioną obsługą wyniku skanowania na Androidzie.
+
+          **Pobieranie:** plik `.exe` jest instalatorem Windows, a `.apk` aplikacją Android. Nie trzeba rozpakowywać ZIP ani logować się do GitHuba.
+
+          Zachowano oryginalne pliki z commita `785f1d1b97e46a73bb3fe55ffb84116ad7ef263c`, bez przebudowy. Pochodzenie i sumy SHA-256 są w `BUILD-INFO.txt` oraz `SHA256SUMS.txt`.
+
+          Testy Androida/JVM i buildy Windows/APK przeszły; użytkownik potwierdził przesyłanie głosu z telefonu do Windows. Audyt nadal trwa, zewnętrzne wtyczki i tryb web pozostają wyłączone. To wydanie testowe, nie deklaracja pełnego bezpieczeństwa ani podpisania plików certyfikatem wydawcy.
+
+          Pliki w tym wydaniu są niezależne od artefaktów Actions: usunięcie starych uruchomień nie usuwa tych instalatorów.
+          NOTES
+          if gh release view "$RELEASE_TAG" --json databaseId --jq '.databaseId' > release-id.txt 2>/dev/null; then
+            release_id=$(cat release-id.txt)
+            gh api "repos/$GH_REPO/releases/$release_id" > release.json
+            python3 - <<'PY'
+          import json, os
+          release = json.load(open('release.json'))
+          if release['target_commitish'] != os.environ['SOURCE_SHA']:
+              raise SystemExit('Tag wydania wskazuje inne źródło; bez nadpisywania')
+          PY
+          else
+            gh release create "$RELEASE_TAG" --target "$SOURCE_SHA" \
+              --title 'MicYou 2.1.1 — test parowania QR' --notes-file notes.md --draft --prerelease --latest=false
+            gh release view "$RELEASE_TAG" --json databaseId --jq '.databaseId' > release-id.txt
+            release_id=$(cat release-id.txt)
+            gh api "repos/$GH_REPO/releases/$release_id" > release.json
+          fi
+          if python3 -c "import json,sys; sys.exit(0 if json.load(open('release.json'))['draft'] else 1)"; then
+            gh release upload "$RELEASE_TAG" publish/* --clobber
+          fi
+
+      - name: Sprawdź kopie przed publikacją
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_id=$(cat release-id.txt)
+          gh api "repos/$GH_REPO/releases/$release_id" > release.json
+          python3 - <<'PY'
+          import json
+          release = json.load(open('release.json'))
+          expected = {'MicYou-Windows-2.1.1-qr-test.1.exe', 'MicYou-Android-2.1.1-qr-test.1.apk', 'SHA256SUMS.txt', 'BUILD-INFO.txt'}
+          if {a['name'] for a in release['assets']} != expected:
+              raise SystemExit('Nieoczekiwany zestaw plików wydania')
+          PY
+          gh release download "$RELEASE_TAG" --dir verify --pattern '*.exe' --pattern '*.apk' --pattern '*.txt'
+          for file in publish/*; do cmp "$file" "verify/$(basename "$file")"; done
+          (cd verify && sha256sum --check SHA256SUMS.txt)
+          python3 check-tag.py --allow-missing
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease --latest=false
+
+      - name: Sprawdź publiczne pobieranie bez logowania
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 check-tag.py
+          for file in publish/*; do
+            name=$(basename "$file")
+            curl --fail --silent --show-error --location --retry 5 --retry-all-errors --retry-delay 2 \
+              "https://github.com/$GH_REPO/releases/download/$RELEASE_TAG/$name" --output "public-check/$name"
+            cmp "$file" "public-check/$name"
+          done
+          (cd public-check && sha256sum --check SHA256SUMS.txt)
+          echo "Wydanie i publiczne pliki sprawdzone: https://github.com/$GH_REPO/releases/tag/$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
